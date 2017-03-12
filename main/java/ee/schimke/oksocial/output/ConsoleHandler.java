@@ -64,7 +64,7 @@ public class ConsoleHandler<R> implements OutputHandler<R> {
     }
   }
 
-  @Override public void showOutput(R response, boolean showHeaders) throws IOException {
+  @Override public void showOutput(R response) throws IOException {
     Optional<String> mimeType = responseExtractor.mimeType(response);
 
     if (mimeType.isPresent()) {

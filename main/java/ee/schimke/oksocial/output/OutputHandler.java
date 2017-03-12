@@ -3,7 +3,7 @@ package ee.schimke.oksocial.output;
 import java.io.IOException;
 
 public interface OutputHandler<R> {
-  void showOutput(R response, boolean showHeaders) throws IOException;
+  void showOutput(R response) throws IOException;
 
   default void showError(String message, Throwable e) {
     if (message != null) {

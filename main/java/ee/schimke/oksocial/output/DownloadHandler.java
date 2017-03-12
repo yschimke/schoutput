@@ -18,7 +18,7 @@ public class DownloadHandler<R> implements OutputHandler<R> {
     this.outputFile = outputFile;
   }
 
-  @Override public void showOutput(R response, boolean showHeaders) throws IOException {
+  @Override public void showOutput(R response) throws IOException {
     BufferedSource source = responseExtractor.source(response);
 
     Sink outputSink = getOutputSink(response);

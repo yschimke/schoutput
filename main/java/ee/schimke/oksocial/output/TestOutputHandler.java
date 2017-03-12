@@ -9,7 +9,7 @@ public class TestOutputHandler<R> implements OutputHandler<R> {
   public final List<Throwable> failures = Lists.newArrayList();
   public final List<String> stdout = Lists.newArrayList();
 
-  @Override public void showOutput(R response, boolean showHeaders) throws IOException {
+  @Override public void showOutput(R response) throws IOException {
     responses.add(response);
   }
 
