@@ -75,11 +75,11 @@ public class ConsoleHandler<R> implements OutputHandler<R> {
         prettyPrintJson(response);
         return;
       }
-    } else {
-      // TODO support a nice hex mode for binary files
-      writeToSink(responseExtractor.source(response), systemOut());
-      System.out.println("");
     }
+
+    // TODO support a nice hex mode for binary files
+    writeToSink(responseExtractor.source(response), systemOut());
+    System.out.println("");
   }
 
   private void prettyPrintJson(R response) throws IOException {
