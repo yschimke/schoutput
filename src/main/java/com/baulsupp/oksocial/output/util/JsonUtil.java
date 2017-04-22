@@ -1,4 +1,4 @@
-package ee.schimke.oksocial.output.util;
+package com.baulsupp.oksocial.output.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

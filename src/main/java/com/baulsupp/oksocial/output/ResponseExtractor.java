@@ -1,4 +1,4 @@
-package ee.schimke.oksocial.output;
+package com.baulsupp.oksocial.output;
 
 import java.util.Optional;
 import okio.BufferedSource;

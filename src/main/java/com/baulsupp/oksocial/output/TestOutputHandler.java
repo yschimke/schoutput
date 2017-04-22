@@ -1,4 +1,4 @@
-package ee.schimke.oksocial.output;
+package com.baulsupp.oksocial.output;
 
 import com.google.common.collect.Lists;
 import java.io.IOException;

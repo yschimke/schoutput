@@ -1,9 +1,11 @@
-package ee.schimke.oksocial.output;
+package com.baulsupp.oksocial.output;
 
-import ee.schimke.oksocial.output.iterm.ItermOutputHandler;
-import ee.schimke.oksocial.output.util.MimeTypeUtil;
-import ee.schimke.oksocial.output.util.PlatformUtil;
-import ee.schimke.oksocial.output.util.UsageException;
+import com.baulsupp.oksocial.output.iterm.ItermOutputHandler;
+import com.baulsupp.oksocial.output.util.CommandUtil;
+import com.baulsupp.oksocial.output.util.OutputUtil;
+import com.baulsupp.oksocial.output.util.PlatformUtil;
+import com.baulsupp.oksocial.output.util.MimeTypeUtil;
+import com.baulsupp.oksocial.output.util.UsageException;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -25,12 +27,8 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
-import static ee.schimke.oksocial.output.DownloadHandler.writeToSink;
-import static ee.schimke.oksocial.output.util.CommandUtil.isInstalled;
-import static ee.schimke.oksocial.output.util.CommandUtil.isTerminal;
-import static ee.schimke.oksocial.output.util.MimeTypeUtil.isJson;
-import static ee.schimke.oksocial.output.util.MimeTypeUtil.isMedia;
-import static ee.schimke.oksocial.output.util.OutputUtil.systemOut;
+import static com.baulsupp.oksocial.output.util.MimeTypeUtil.isJson;
+import static com.baulsupp.oksocial.output.util.MimeTypeUtil.isMedia;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 
@@ -71,19 +69,19 @@ public class ConsoleHandler<R> implements OutputHandler<R> {
       if (isMedia(mimeType.get())) {
         openPreview(response);
         return;
-      } else if (isInstalled("jq") && (isJson(mimeType.get()))) {
+      } else if (CommandUtil.isInstalled("jq") && (isJson(mimeType.get()))) {
         prettyPrintJson(response);
         return;
       }
     }
 
     // TODO support a nice hex mode for binary files
-    writeToSink(responseExtractor.source(response), systemOut());
+    DownloadHandler.writeToSink(responseExtractor.source(response), OutputUtil.systemOut());
     System.out.println("");
   }
 
   private void prettyPrintJson(R response) throws IOException {
-    List<String> command = isTerminal() ? asList("jq", "-C", ".") : asList("jq", ".");
+    List<String> command = CommandUtil.isTerminal() ? asList("jq", "-C", ".") : asList("jq", ".");
     streamToCommand(Optional.of(responseExtractor.source(response)), command, Optional.empty());
   }
 
@@ -118,7 +116,7 @@ public class ConsoleHandler<R> implements OutputHandler<R> {
     } else {
       System.err.println("Falling back to console output, use -r to avoid warning");
 
-      writeToSink(responseExtractor.source(response), systemOut());
+      DownloadHandler.writeToSink(responseExtractor.source(response), OutputUtil.systemOut());
       System.out.println("");
     }
   }
@@ -130,7 +128,7 @@ public class ConsoleHandler<R> implements OutputHandler<R> {
         File.createTempFile("output", MimeTypeUtil.getExtension(mimeType));
 
     try (Sink out = Okio.sink(tempFile)) {
-      writeToSink(responseExtractor.source(response), out);
+      DownloadHandler.writeToSink(responseExtractor.source(response), out);
     }
     return tempFile;
   }
