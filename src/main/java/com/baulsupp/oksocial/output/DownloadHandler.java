@@ -1,12 +1,11 @@
-package ee.schimke.oksocial.output;
+package com.baulsupp.oksocial.output;
 
+import com.baulsupp.oksocial.output.util.OutputUtil;
 import java.io.File;
 import java.io.IOException;
 import okio.BufferedSource;
 import okio.Okio;
 import okio.Sink;
-
-import static ee.schimke.oksocial.output.util.OutputUtil.systemOut;
 
 public class DownloadHandler<R> implements OutputHandler<R> {
   private ResponseExtractor<R> responseExtractor;
@@ -33,7 +32,7 @@ public class DownloadHandler<R> implements OutputHandler<R> {
 
   public Sink getOutputSink(R response) throws IOException {
     if (isStdout()) {
-      return systemOut();
+      return OutputUtil.systemOut();
     } else if (outputFile.isDirectory()) {
       File responseOutputFile = new File(outputFile, responseExtractor.filename(response));
       System.err.println("Saving " + responseOutputFile);

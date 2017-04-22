@@ -1,4 +1,4 @@
-package ee.schimke.oksocial.output.util;
+package com.baulsupp.oksocial.output.util;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

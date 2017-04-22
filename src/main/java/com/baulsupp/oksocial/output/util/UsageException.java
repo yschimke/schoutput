@@ -1,4 +1,4 @@
-package ee.schimke.oksocial.output.util;
+package com.baulsupp.oksocial.output.util;
 
 public class UsageException extends RuntimeException {
   public UsageException(String msg) {

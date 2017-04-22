@@ -1,4 +1,4 @@
-package ee.schimke.oksocial.output.util;
+package com.baulsupp.oksocial.output.util;
 
 import java.io.IOException;
 import java.io.InputStream;
