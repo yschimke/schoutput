@@ -1,7 +1,7 @@
-package ee.schimke.oksocial.output.iterm;
+package com.baulsupp.oksocial.output.iterm;
 
-import ee.schimke.oksocial.output.OsxOutputHandler;
-import ee.schimke.oksocial.output.ResponseExtractor;
+import com.baulsupp.oksocial.output.OsxOutputHandler;
+import com.baulsupp.oksocial.output.ResponseExtractor;
 import java.io.IOException;
 
 public class ItermOutputHandler<R> extends OsxOutputHandler<R> {
