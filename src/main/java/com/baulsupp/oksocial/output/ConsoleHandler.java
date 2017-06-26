@@ -2,17 +2,21 @@ package com.baulsupp.oksocial.output;
 
 import com.baulsupp.oksocial.output.iterm.ItermOutputHandler;
 import com.baulsupp.oksocial.output.util.CommandUtil;
+import com.baulsupp.oksocial.output.util.MimeTypeUtil;
 import com.baulsupp.oksocial.output.util.OutputUtil;
 import com.baulsupp.oksocial.output.util.PlatformUtil;
-import com.baulsupp.oksocial.output.util.MimeTypeUtil;
 import com.baulsupp.oksocial.output.util.UsageException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.awt.Desktop;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -27,6 +31,9 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
+import static com.baulsupp.oksocial.output.util.JsonUtil.cborMapper;
+import static com.baulsupp.oksocial.output.util.JsonUtil.jsonMapper;
+import static com.baulsupp.oksocial.output.util.MimeTypeUtil.isCbor;
 import static com.baulsupp.oksocial.output.util.MimeTypeUtil.isJson;
 import static com.baulsupp.oksocial.output.util.MimeTypeUtil.isMedia;
 import static java.util.Arrays.asList;
@@ -65,24 +72,47 @@ public class ConsoleHandler<R> implements OutputHandler<R> {
   @Override public void showOutput(R response) throws IOException {
     Optional<String> mimeType = responseExtractor.mimeType(response);
 
+    BufferedSource source = responseExtractor.source(response);
+
     if (mimeType.isPresent()) {
+      if (isCbor(mimeType.get())) {
+        source = convertCborToJson(source);
+        mimeType = Optional.of("application/json");
+      }
+
       if (isMedia(mimeType.get())) {
         openPreview(response);
         return;
       } else if (CommandUtil.isInstalled("jq") && (isJson(mimeType.get()))) {
-        prettyPrintJson(response);
+        prettyPrintJson(source);
         return;
       }
     }
 
     // TODO support a nice hex mode for binary files
-    DownloadHandler.writeToSink(responseExtractor.source(response), OutputUtil.systemOut());
+    DownloadHandler.writeToSink(source, OutputUtil.systemOut());
     System.out.println("");
   }
 
-  private void prettyPrintJson(R response) throws IOException {
+  private BufferedSource convertCborToJson(BufferedSource source) throws IOException {
+    // TODO consider adding streaming
+
+    ObjectMapper cborMapper = cborMapper();
+
+    Object map =
+        cborMapper.readValue(source.inputStream(), new TypeReference<Map<String, Object>>() {
+        });
+
+    ObjectMapper om = jsonMapper();
+
+    byte[] bytes = om.writeValueAsBytes(map);
+
+    return Okio.buffer(Okio.source(new ByteArrayInputStream(bytes)));
+  }
+
+  private void prettyPrintJson(BufferedSource response) throws IOException {
     List<String> command = CommandUtil.isTerminal() ? asList("jq", "-C", ".") : asList("jq", ".");
-    streamToCommand(Optional.of(responseExtractor.source(response)), command, Optional.empty());
+    streamToCommand(Optional.of(response), command, Optional.empty());
   }
 
   public void streamToCommand(Optional<BufferedSource> source, List<String> command,
