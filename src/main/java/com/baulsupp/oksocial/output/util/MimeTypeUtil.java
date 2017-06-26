@@ -24,12 +24,12 @@ public class MimeTypeUtil {
     return ".data";
   }
 
-  public static boolean isJson(String mediaType) {
+  public static boolean isCbor(String mediaType) {
     return isMediaType(mediaType, "application/cbor") || mediaType
         .endsWith("+cbor");
   }
 
-  public static boolean isCbor(String mediaType) {
+  public static boolean isJson(String mediaType) {
     return isMediaType(mediaType, "application/json", "text/json") || mediaType
         .endsWith("+json");
   }

@@ -2,16 +2,12 @@ package com.baulsupp.oksocial.output;
 
 import com.baulsupp.oksocial.output.iterm.ItermOutputHandler;
 import com.baulsupp.oksocial.output.util.CommandUtil;
+import com.baulsupp.oksocial.output.util.MimeTypeUtil;
 import com.baulsupp.oksocial.output.util.OutputUtil;
 import com.baulsupp.oksocial.output.util.PlatformUtil;
-import com.baulsupp.oksocial.output.util.MimeTypeUtil;
 import com.baulsupp.oksocial.output.util.UsageException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import java.awt.Desktop;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -35,6 +31,8 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
+import static com.baulsupp.oksocial.output.util.JsonUtil.cborMapper;
+import static com.baulsupp.oksocial.output.util.JsonUtil.jsonMapper;
 import static com.baulsupp.oksocial.output.util.MimeTypeUtil.isCbor;
 import static com.baulsupp.oksocial.output.util.MimeTypeUtil.isJson;
 import static com.baulsupp.oksocial.output.util.MimeTypeUtil.isMedia;
@@ -79,6 +77,7 @@ public class ConsoleHandler<R> implements OutputHandler<R> {
     if (mimeType.isPresent()) {
       if (isCbor(mimeType.get())) {
         source = convertCborToJson(source);
+        mimeType = Optional.of("application/json");
       }
 
       if (isMedia(mimeType.get())) {
@@ -96,14 +95,15 @@ public class ConsoleHandler<R> implements OutputHandler<R> {
   }
 
   private BufferedSource convertCborToJson(BufferedSource source) throws IOException {
-    ObjectMapper cborMapper = new ObjectMapper(new CBORFactory());
+    // TODO consider adding streaming
 
-    Map<String, Object> map = cborMapper.readValue(source.inputStream(), new TypeReference<Map<String, Object>>() {
-    });
+    ObjectMapper cborMapper = cborMapper();
 
-    ObjectMapper om = new ObjectMapper().registerModule(new ParameterNamesModule())
-        .registerModule(new Jdk8Module())
-        .registerModule(new JavaTimeModule());
+    Object map =
+        cborMapper.readValue(source.inputStream(), new TypeReference<Map<String, Object>>() {
+        });
+
+    ObjectMapper om = jsonMapper();
 
     byte[] bytes = om.writeValueAsBytes(map);
 
