@@ -1,6 +1,8 @@
 package com.baulsupp.oksocial.output.util;
 
 import java.util.Optional;
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 
 public class MimeTypeUtil {
   public static boolean isMedia(String mediaType) {
@@ -35,12 +37,22 @@ public class MimeTypeUtil {
   }
 
   public static boolean isMediaType(String mediaType, String... types) {
-    for (String type : types) {
-      if (mediaType.equals(type)) {
-        return true;
+    try {
+      if (mediaType == null) {
+        return false;
       }
-    }
 
-    return false;
+      MimeType t = new MimeType(mediaType);
+
+      for (String type : types) {
+        if (t.match(type)) {
+          return true;
+        }
+      }
+
+      return false;
+    } catch (MimeTypeParseException e) {
+      return false;
+    }
   }
 }
