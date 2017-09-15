@@ -36,4 +36,4 @@ echo Created "https://api.github.com/repos/yschimke/oksocial-output/releases/${R
 
 ./gradlew -q clean jar
 
-#./oksocial -H "Content-Type: application/x-gzip" -d "@build/distributions/oksocial-${TAG_VERSION}.tgz" "https://uploads.github.com/repos/yschimke/oksocial/releases/${RELEASE_ID}/assets?name=oksocial-${TAG_VERSION}.tgz" | jq ".browser_download_url"
+oksocial -H "Content-Type: application/java-archive" -d "@build/libs/oksocial-output-${TAG_VERSION}.jar" "https://uploads.github.com/repos/yschimke/oksocial-output/releases/${RELEASE_ID}/assets?name=oksocial-output-${TAG_VERSION}.jar" | jq ".browser_download_url"
