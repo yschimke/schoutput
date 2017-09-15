@@ -22,6 +22,7 @@ apply plugin: 'java'
 apply plugin: 'distribution'
 apply plugin: 'maven'
 apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'signing'
 
 group = 'com.baulsupp'
 
@@ -86,4 +87,41 @@ task packageTests(type: Jar) {
   classifier = 'tests'
 }
 
-artifacts.archives packageTests
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar, packageTests
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUser, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUser, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'OkSocial Output'
+                packaging 'jar'
+            }
+        }
+    }
+}
