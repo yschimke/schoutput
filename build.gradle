@@ -10,18 +10,19 @@ buildscript {
 plugins {
   id 'com.github.ben-manes.versions' version '0.15.0'
   id 'net.nemerosa.versioning' version '2.6.1'
+    id "org.jetbrains.kotlin.jvm" version "1.1.4-3"
 }
 
 ext.junit4Version        = '4.12'
 ext.junitVintageVersion  = '4.12.0'
 ext.junitPlatformVersion = '1.0.0'
 ext.junitJupiterVersion  = '5.0.0'
-ext.log4jVersion         = '2.6.2'
 
 apply plugin: 'java'
 apply plugin: 'distribution'
 apply plugin: 'maven'
 apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'signing'
 
 group = 'com.baulsupp'
 
@@ -40,12 +41,19 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
 repositories {
     maven { url "https://jitpack.io" }
     maven { url "http://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:1.1.4-3"
+    compile "org.jetbrains.kotlin:kotlin-reflect:1.1.4-3"
+
     compile group: 'org.zeroturnaround', name: 'zt-exec', version:'1.10'
     compile group: 'com.squareup.okio', name: 'okio', version:'1.13.0'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version:'2.9.1'
@@ -69,15 +77,16 @@ dependencies {
     testCompile("junit:junit:${junit4Version}")
     testRuntime("org.junit.vintage:junit-vintage-engine:${junitVintageVersion}")
 
-    testRuntime("org.apache.logging.log4j:log4j-core:${log4jVersion}")
-    testRuntime("org.apache.logging.log4j:log4j-jul:${log4jVersion}")
-
     // Only needed to run tests in an (IntelliJ) IDE(A) that bundles an older version
     testRuntime("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
+
+    testCompile "org.jetbrains.kotlin:kotlin-test:1.1.4-3"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.1.4-3"
+
+    testRuntime group: 'org.slf4j', name: 'slf4j-jdk14', version:'1.7.25'
 }
 
 junitPlatform {
-    logManager 'org.apache.logging.log4j.jul.LogManager'
 }
 
 //packaging tests
@@ -86,4 +95,41 @@ task packageTests(type: Jar) {
   classifier = 'tests'
 }
 
-artifacts.archives packageTests
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar, packageTests
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUser, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUser, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'OkSocial Output'
+                packaging 'jar'
+            }
+        }
+    }
+}
