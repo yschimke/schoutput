@@ -22,6 +22,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'signing'
+apply plugin: 'maven-publish'
 
 group = 'com.baulsupp'
 
@@ -110,6 +111,14 @@ artifacts {
 
 signing {
     sign configurations.archives
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }
 
 uploadArchives {
