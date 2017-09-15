@@ -1,0 +1,59 @@
+plugins {
+  id 'com.github.ben-manes.versions' version '0.15.0'
+  id 'net.nemerosa.versioning' version '2.6.1'
+}
+
+apply plugin: 'java'
+apply plugin: 'distribution'
+apply plugin: 'maven'
+
+group = 'com.baulsupp'
+
+versioning {
+  releaseMode = project.hasProperty('releaseMode') ? project.property('releaseMode') : 'snapshot'
+}
+
+version = versioning.info.display
+
+description = """OkHttp Social Output"""
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    maven { url "https://jitpack.io" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+}
+
+dependencies {
+    compile group: 'org.zeroturnaround', name: 'zt-exec', version:'1.10'
+    compile group: 'com.squareup.okio', name: 'okio', version:'1.13.0'
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version:'2.9.1'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.9.1'
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version:'2.9.1'
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version:'2.9.1'
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version:'2.9.1'
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-cbor', version:'2.9.1'
+    compile group: 'commons-cli', name: 'commons-cli', version:'1.4'
+    compile group: 'commons-lang', name: 'commons-lang', version:'2.6'
+    compile group: 'commons-io', name: 'commons-io', version:'2.5'
+    compile group: 'org.slf4j', name: 'slf4j-api', version:'1.7.25'
+    compile group: 'com.google.guava', name: 'guava', version:'23.0'
+    compile group: 'com.jakewharton.byteunits', name: 'byteunits', version:'0.9.1'
+    compile group: 'org.junit.platform', name: 'junit-platform-surefire-provider', version:'1.0.0'
+    compile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version:'5.0.0'
+    compile group: 'org.junit.jupiter', name: 'junit-jupiter-migration-support', version:'5.0.0-M4'
+    compile group: 'org.junit.vintage', name: 'junit-vintage-engine', version:'4.12.0'
+}
+
+//packaging tests
+task packageTests(type: Jar) {
+  from sourceSets.test.output
+  classifier = 'tests'
+}
+
+artifacts.archives packageTests
