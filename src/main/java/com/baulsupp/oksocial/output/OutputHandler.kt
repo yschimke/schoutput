@@ -2,11 +2,11 @@ package com.baulsupp.oksocial.output
 
 import java.io.IOException
 
-interface OutputHandler<R> {
+interface OutputHandler<in R> {
   @Throws(IOException::class)
   fun showOutput(response: R)
 
-  open fun showError(message: String?, e: Throwable?) {
+  fun showError(message: String?, e: Throwable?) {
     if (message != null) {
       System.err.println(message)
     }
@@ -14,11 +14,11 @@ interface OutputHandler<R> {
   }
 
   @Throws(IOException::class)
-  open fun openLink(url: String) {
+  fun openLink(url: String) {
     System.err.println(url)
   }
 
-  open fun info(message: String) {
+  fun info(message: String) {
     println(message)
   }
 }

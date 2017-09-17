@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.output.util
 
-import java.util.Optional
+import java.util.*
 import javax.activation.MimeType
 import javax.activation.MimeTypeParseException
 
@@ -11,11 +11,11 @@ object MimeTypeUtil {
 
   fun getExtension(mediaType: Optional<String>): String {
     if (mediaType.isPresent) {
-      when (mediaType.get()) {
-        "image/jpeg" -> return ".jpg"
-        "image/gif" -> return ".gif"
-        "image/png" -> return ".png"
-        else -> return ".data"
+      return when (mediaType.get()) {
+        "image/jpeg" -> ".jpg"
+        "image/gif" -> ".gif"
+        "image/png" -> ".png"
+        else -> ".data"
       }
     }
 
@@ -40,13 +40,7 @@ object MimeTypeUtil {
 
       val t = MimeType(mediaType)
 
-      for (type in types) {
-        if (t.match(type)) {
-          return true
-        }
-      }
-
-      return false
+      return types.any { t.match(it) }
     } catch (e: MimeTypeParseException) {
       return false
     }

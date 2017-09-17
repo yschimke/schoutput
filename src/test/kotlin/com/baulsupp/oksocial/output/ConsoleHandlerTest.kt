@@ -2,15 +2,12 @@ package com.baulsupp.oksocial.output
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory
-import java.io.ByteArrayInputStream
-import java.io.File
-import java.io.IOException
-import java.util.LinkedHashMap
-import java.util.Optional
 import okio.BufferedSource
 import okio.Okio
 import org.junit.Test
-
+import java.io.ByteArrayInputStream
+import java.io.IOException
+import java.util.*
 import java.util.Optional.of
 
 class ConsoleHandlerTest {

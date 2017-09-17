@@ -186,12 +186,10 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
     private val logger = Logger.getLogger(ConsoleHandler::class.java.name)
 
     fun instance(re: ResponseExtractor<*>): ConsoleHandler<*> {
-      return if (ItermOutputHandler.isAvailable) {
-        ItermOutputHandler(re)
-      } else if (PlatformUtil.isOSX) {
-        OsxOutputHandler(re)
-      } else {
-        ConsoleHandler(re)
+      return when {
+        ItermOutputHandler.isAvailable -> ItermOutputHandler(re)
+        PlatformUtil.isOSX -> OsxOutputHandler(re)
+        else -> ConsoleHandler(re)
       }
     }
   }

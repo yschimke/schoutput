@@ -1,18 +1,17 @@
 package com.baulsupp.oksocial.output.util
 
 import java.io.IOException
-import java.io.InputStream
-import java.util.Properties
+import java.util.*
 
 object PlatformUtil {
 
   fun versionString(mainClass: Class<*>, propertiesFile: String): String {
-    try {
+    return try {
       val prop = Properties()
       val `in` = mainClass.getResourceAsStream(propertiesFile)
       prop.load(`in`)
       `in`.close()
-      return prop.getProperty("version")
+      prop.getProperty("version")
     } catch (e: IOException) {
       throw AssertionError("Could not load " + propertiesFile)
     }

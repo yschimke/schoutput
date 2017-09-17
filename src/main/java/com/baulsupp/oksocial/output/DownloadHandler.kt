@@ -25,19 +25,21 @@ class DownloadHandler<R>(private val responseExtractor: ResponseExtractor<R>, pr
 
   @Throws(IOException::class)
   fun getOutputSink(response: R): Sink {
-    if (isStdout) {
-      return OutputUtil.systemOut()
-    } else if (outputFile.isDirectory) {
-      val responseOutputFile = File(outputFile, responseExtractor.filename(response))
-      System.err.println("Saving " + responseOutputFile)
-      return Okio.sink(responseOutputFile)
-    } else {
-      if (outputFile.parentFile != null && !outputFile.parentFile.exists()) {
-        if (!outputFile.parentFile.mkdirs()) {
-          throw IOException("unable to create directory " + outputFile)
-        }
+    return when {
+      isStdout -> OutputUtil.systemOut()
+      outputFile.isDirectory -> {
+        val responseOutputFile = File(outputFile, responseExtractor.filename(response))
+        System.err.println("Saving " + responseOutputFile)
+        Okio.sink(responseOutputFile)
       }
-      return Okio.sink(outputFile)
+      else -> {
+        if (outputFile.parentFile != null && !outputFile.parentFile.exists()) {
+          if (!outputFile.parentFile.mkdirs()) {
+            throw IOException("unable to create directory " + outputFile)
+          }
+        }
+        Okio.sink(outputFile)
+      }
     }
   }
 

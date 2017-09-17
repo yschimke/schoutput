@@ -21,11 +21,11 @@ object CommandUtil {
   }
 
   fun isInstalled(command: String): Boolean {
-    try {
-      return installed.get(command)
+    return try {
+      installed.get(command)
     } catch (e: ExecutionException) {
       e.cause!!.printStackTrace()
-      return false
+      false
     }
 
   }
