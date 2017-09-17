@@ -1,22 +1,23 @@
 buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0'
-    }
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0'
+  }
 }
 
 plugins {
+  id "com.gradle.build-scan" version "1.9"
+  id "org.jetbrains.kotlin.jvm" version "1.1.4-3"
   id 'com.github.ben-manes.versions' version '0.15.0'
   id 'net.nemerosa.versioning' version '2.6.1'
-    id "org.jetbrains.kotlin.jvm" version "1.1.4-3"
 }
 
-ext.junit4Version        = '4.12'
-ext.junitVintageVersion  = '4.12.0'
+ext.junit4Version = '4.12'
+ext.junitVintageVersion = '4.12.0'
 ext.junitPlatformVersion = '1.0.0'
-ext.junitJupiterVersion  = '5.0.0'
+ext.junitJupiterVersion = '5.0.0'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -38,52 +39,56 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+  options.encoding = 'UTF-8'
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+  kotlinOptions.jvmTarget = "1.8"
 }
 
 repositories {
-    maven { url "https://jitpack.io" }
-    maven { url "http://repo.maven.apache.org/maven2" }
+  jcenter()
+  maven { url "https://jitpack.io" }
+  maven { url "http://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:1.1.4-3"
-    compile "org.jetbrains.kotlin:kotlin-reflect:1.1.4-3"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:1.1.4-3"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:1.1.4-3"
 
-    compile group: 'org.zeroturnaround', name: 'zt-exec', version:'1.10'
-    compile group: 'com.squareup.okio', name: 'okio', version:'1.13.0'
-    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version:'2.9.1'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.9.1'
-    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version:'2.9.1'
-    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version:'2.9.1'
-    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version:'2.9.1'
-    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-cbor', version:'2.9.1'
-    compile group: 'commons-cli', name: 'commons-cli', version:'1.4'
-    compile group: 'commons-lang', name: 'commons-lang', version:'2.6'
-    compile group: 'commons-io', name: 'commons-io', version:'2.5'
-    compile group: 'org.slf4j', name: 'slf4j-api', version:'1.7.25'
-    compile group: 'com.google.guava', name: 'guava', version:'23.0'
-    compile group: 'com.jakewharton.byteunits', name: 'byteunits', version:'0.9.1'
+  compile group: 'org.zeroturnaround', name: 'zt-exec', version: '1.10'
+  compile group: 'com.squareup.okio', name: 'okio', version: '1.13.0'
+  compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml',
+          version: '2.9.1'
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.1'
+  compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names',
+          version: '2.9.1'
+  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.9.1'
+  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.1'
+  compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-cbor',
+          version: '2.9.1'
+  compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
+  compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
+  compile group: 'commons-io', name: 'commons-io', version: '2.5'
+  compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+  compile group: 'com.google.guava', name: 'guava', version: '23.0'
+  compile group: 'com.jakewharton.byteunits', name: 'byteunits', version: '0.9.1'
 
-    // JUnit Jupiter API and TestEngine implementation
-    testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+  // JUnit Jupiter API and TestEngine implementation
+  testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+  testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
 
-    // If you also want to support JUnit 3 and JUnit 4 tests
-    testCompile("junit:junit:${junit4Version}")
-    testRuntime("org.junit.vintage:junit-vintage-engine:${junitVintageVersion}")
+  // If you also want to support JUnit 3 and JUnit 4 tests
+  testCompile("junit:junit:${junit4Version}")
+  testRuntime("org.junit.vintage:junit-vintage-engine:${junitVintageVersion}")
 
-    // Only needed to run tests in an (IntelliJ) IDE(A) that bundles an older version
-    testRuntime("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
+  // Only needed to run tests in an (IntelliJ) IDE(A) that bundles an older version
+  testRuntime("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
 
-    testCompile "org.jetbrains.kotlin:kotlin-test:1.1.4-3"
-    testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.1.4-3"
+  testCompile "org.jetbrains.kotlin:kotlin-test:1.1.4-3"
+  testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.1.4-3"
 
-    testRuntime group: 'org.slf4j', name: 'slf4j-jdk14', version:'1.7.25'
+  testRuntime group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.25'
 }
 
 junitPlatform {
@@ -96,48 +101,50 @@ task packageTests(type: Jar) {
 }
 
 task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
+  classifier = 'javadoc'
+  from javadoc
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+  classifier = 'sources'
+  from sourceSets.main.allSource
 }
 
 artifacts {
-    archives javadocJar, sourcesJar, packageTests
+  archives javadocJar, sourcesJar, packageTests
 }
 
 signing {
-    sign configurations.archives
+  sign configurations.archives
 }
 
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
     }
+  }
 }
 
 uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUser, password: ossrhPassword)
-            }
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: ossrhUser, password: ossrhPassword)
+      }
 
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUser, password: ossrhPassword)
-            }
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhUser, password: ossrhPassword)
+      }
 
-            pom.project {
-                name 'OkSocial Output'
-                packaging 'jar'
-            }
-        }
+      pom.project {
+        name 'OkSocial Output'
+        packaging 'jar'
+      }
     }
+  }
 }
+
+buildScan { licenseAgreementUrl = 'https://gradle.com/terms-of-service'; licenseAgree = 'yes' }
