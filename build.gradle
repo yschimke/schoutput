@@ -12,6 +12,7 @@ plugins {
   id "org.jetbrains.kotlin.jvm" version "1.1.4-3"
   id 'com.github.ben-manes.versions' version '0.15.0'
   id 'net.nemerosa.versioning' version '2.6.1'
+  id 'io.codearte.nexus-staging' version '0.11.0'
 }
 
 ext.junit4Version = '4.12'
@@ -23,17 +24,18 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'signing'
-apply plugin: 'maven-publish'
 
 group = 'com.baulsupp'
+archivesBaseName = "oksocial-output"
 
 versioning {
+  // TODO automate this
   releaseMode = project.hasProperty('releaseMode') ? project.property('releaseMode') : 'snapshot'
 }
 
 version = versioning.info.display
 
-description = """OkHttp Social Output"""
+description = "OkHttp Social Output"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -111,37 +113,66 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts {
-  archives javadocJar, sourcesJar, packageTests
+  archives javadocJar, sourcesJar, packageTests, jar
 }
 
-signing {
-  sign configurations.archives
-}
+// TODO support publish to maven local
 
-publishing {
-  publications {
-    mavenJava(MavenPublication) {
-      from components.java
-    }
+if (project.hasProperty('ossrhUser')) {
+  signing {
+    sign configurations.archives
   }
-}
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+  nexusStaging {
+    username = ossrhUser
+    password = ossrhPassword
+//  packageGroup = "org.mycompany.myproject" //optional if packageGroup == project.getGroup()
+//  stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
+  }
 
-      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        authentication(userName: ossrhUser, password: ossrhPassword)
-      }
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-        authentication(userName: ossrhUser, password: ossrhPassword)
-      }
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+          authentication(userName: ossrhUser, password: ossrhPassword)
+        }
 
-      pom.project {
-        name 'OkSocial Output'
-        packaging 'jar'
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+          authentication(userName: ossrhUser, password: ossrhPassword)
+        }
+
+        pom.project {
+          name project.name
+          group 'com.baulsupp'
+          description "Command Line Output Library"
+          url "https://github.com/yschimke/oksocial-output"
+
+          scm {
+            connection 'scm:git:https://github.com/yschimke/oksocial-output.git'
+            developerConnection 'scm:git:git@github.com:yschimke/oksocial-output.git'
+            url 'https://github.com/yschimke/oksocial-output.git'
+          }
+
+          licenses {
+            license {
+              name 'Apache License'
+              url 'http://opensource.org/licenses/apache-2.0'
+              distribution 'repo'
+            }
+          }
+
+          developers {
+            developer {
+              id = 'yschimke'
+              name = 'Yuri Schimke'
+              email = 'yuri@schimke.ee'
+            }
+          }
+
+          packaging 'jar'
+        }
       }
     }
   }
