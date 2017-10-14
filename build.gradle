@@ -9,7 +9,7 @@ buildscript {
 
 plugins {
   id "com.gradle.build-scan" version "1.9"
-  id "org.jetbrains.kotlin.jvm" version "1.1.4-3"
+  id "org.jetbrains.kotlin.jvm" version "1.1.51"
   id 'com.github.ben-manes.versions' version '0.15.0'
   id 'net.nemerosa.versioning' version '2.6.1'
   id 'io.codearte.nexus-staging' version '0.11.0'
@@ -19,6 +19,7 @@ ext.junit4Version = '4.12'
 ext.junitVintageVersion = '4.12.0'
 ext.junitPlatformVersion = '1.0.0'
 ext.junitJupiterVersion = '5.0.0'
+ext.kotlin_version = '1.1.51'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -55,8 +56,8 @@ repositories {
 }
 
 dependencies {
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:1.1.4-3"
-  implementation "org.jetbrains.kotlin:kotlin-reflect:1.1.4-3"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:1.1.51"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:1.1.51"
 
   compile group: 'org.zeroturnaround', name: 'zt-exec', version: '1.10'
   compile group: 'com.squareup.okio', name: 'okio', version: '1.13.0'
@@ -87,8 +88,8 @@ dependencies {
   // Only needed to run tests in an (IntelliJ) IDE(A) that bundles an older version
   testRuntime("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
 
-  testCompile "org.jetbrains.kotlin:kotlin-test:1.1.4-3"
-  testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.1.4-3"
+  testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+  testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
   testRuntime group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.25'
 }

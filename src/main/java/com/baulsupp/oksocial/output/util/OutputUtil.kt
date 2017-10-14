@@ -5,7 +5,7 @@ import okio.Sink
 
 object OutputUtil {
 
-  fun systemOut(): Sink {
-    return Okio.sink(System.out)
-  }
+    fun systemOut(): Sink {
+        return Okio.sink(System.out)
+    }
 }
