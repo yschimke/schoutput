@@ -1,4 +1,5 @@
 buildscript {
+  ext.kotlin_version = '1.2.0'
   repositories {
     mavenCentral()
   }
@@ -8,9 +9,9 @@ buildscript {
 }
 
 plugins {
-  id "com.gradle.build-scan" version "1.9"
-  id "org.jetbrains.kotlin.jvm" version "1.1.51"
-  id 'com.github.ben-manes.versions' version '0.15.0'
+  id "com.gradle.build-scan" version "1.10.3"
+  id "org.jetbrains.kotlin.jvm" version "1.2.0"
+  id 'com.github.ben-manes.versions' version '0.17.0'
   id 'net.nemerosa.versioning' version '2.6.1'
   id 'io.codearte.nexus-staging' version '0.11.0'
 }
@@ -19,7 +20,7 @@ ext.junit4Version = '4.12'
 ext.junitVintageVersion = '4.12.0'
 ext.junitPlatformVersion = '1.0.0'
 ext.junitJupiterVersion = '5.0.0'
-ext.kotlin_version = '1.1.51'
+ext.jacksonVersion = '2.9.2'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -56,26 +57,23 @@ repositories {
 }
 
 dependencies {
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:1.1.51"
-  implementation "org.jetbrains.kotlin:kotlin-reflect:1.1.51"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-  compile group: 'org.zeroturnaround', name: 'zt-exec', version: '1.10'
-  compile group: 'com.squareup.okio', name: 'okio', version: '1.13.0'
-  compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml',
-          version: '2.9.1'
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.1'
-  compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names',
-          version: '2.9.1'
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.9.1'
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.1'
-  compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-cbor',
-          version: '2.9.1'
-  compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
-  compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
-  compile group: 'commons-io', name: 'commons-io', version: '2.5'
-  compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-  compile group: 'com.google.guava', name: 'guava', version: '23.0'
-  compile group: 'com.jakewharton.byteunits', name: 'byteunits', version: '0.9.1'
+  compile 'org.zeroturnaround:zt-exec:1.10'
+  compile 'com.squareup.okio:okio:1.13.0'
+  compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion"
+  compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+  compile "com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion"
+  compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
+  compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
+  compile "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:$jacksonVersion"
+  compile 'commons-cli:commons-cli:1.4'
+  compile 'commons-lang:commons-lang:2.6'
+  compile 'commons-io:commons-io:2.5'
+  compile 'org.slf4j:slf4j-api:1.7.25'
+  compile 'com.google.guava:guava:23.0'
+  compile 'com.jakewharton.byteunits:byteunits:0.9.1'
 
   // JUnit Jupiter API and TestEngine implementation
   testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
@@ -91,7 +89,7 @@ dependencies {
   testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
   testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
-  testRuntime group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.25'
+  testRuntime 'org.slf4j:slf4j-jdk14:1.7.25'
 }
 
 junitPlatform {
