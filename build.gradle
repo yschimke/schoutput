@@ -1,5 +1,5 @@
 buildscript {
-  ext.kotlin_version = '1.2.0'
+  ext.kotlin_version = '1.2.10'
   repositories {
     mavenCentral()
   }
@@ -9,8 +9,8 @@ buildscript {
 }
 
 plugins {
-  id "com.gradle.build-scan" version "1.10.3"
-  id "org.jetbrains.kotlin.jvm" version "1.2.0"
+  id "com.gradle.build-scan" version "1.11"
+  id "org.jetbrains.kotlin.jvm" version "1.2.10"
   id 'com.github.ben-manes.versions' version '0.17.0'
   id 'net.nemerosa.versioning' version '2.6.1'
   id 'io.codearte.nexus-staging' version '0.11.0'
@@ -20,12 +20,13 @@ ext.junit4Version = '4.12'
 ext.junitVintageVersion = '4.12.0'
 ext.junitPlatformVersion = '1.0.0'
 ext.junitJupiterVersion = '5.0.0'
-ext.jacksonVersion = '2.9.2'
+ext.jacksonVersion = '2.9.3'
 
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'signing'
+apply plugin: 'maven-publish'
 
 group = 'com.baulsupp'
 archivesBaseName = "oksocial-output"
@@ -59,32 +60,34 @@ repositories {
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
   implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+  implementation "org.jfree:jfreesvg:3.3"
+  implementation 'com.kitfox.svg:svg-salamander:1.0'
+  implementation 'org.zeroturnaround:zt-exec:1.10'
+  implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion"
+  implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+  implementation "com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion"
+  implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
+  implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
+  implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:$jacksonVersion"
+  implementation 'commons-cli:commons-cli:1.4'
+  implementation 'commons-lang:commons-lang:2.6'
+  implementation 'commons-io:commons-io:2.5'
+  implementation 'org.slf4j:slf4j-api:1.7.25'
+  implementation 'com.google.guava:guava:23.0'
+  implementation 'com.jakewharton.byteunits:byteunits:0.9.1'
 
-  compile 'org.zeroturnaround:zt-exec:1.10'
   compile 'com.squareup.okio:okio:1.13.0'
-  compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion"
-  compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-  compile "com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion"
-  compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
-  compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
-  compile "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:$jacksonVersion"
-  compile 'commons-cli:commons-cli:1.4'
-  compile 'commons-lang:commons-lang:2.6'
-  compile 'commons-io:commons-io:2.5'
-  compile 'org.slf4j:slf4j-api:1.7.25'
-  compile 'com.google.guava:guava:23.0'
-  compile 'com.jakewharton.byteunits:byteunits:0.9.1'
 
   // JUnit Jupiter API and TestEngine implementation
-  testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
-  testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+  testCompile "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
+  testRuntime "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
 
   // If you also want to support JUnit 3 and JUnit 4 tests
-  testCompile("junit:junit:${junit4Version}")
-  testRuntime("org.junit.vintage:junit-vintage-engine:${junitVintageVersion}")
+  testCompile "junit:junit:${junit4Version}"
+  testRuntime "org.junit.vintage:junit-vintage-engine:${junitVintageVersion}"
 
   // Only needed to run tests in an (IntelliJ) IDE(A) that bundles an older version
-  testRuntime("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
+  testRuntime "org.junit.platform:junit-platform-launcher:${junitPlatformVersion}"
 
   testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
   testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
@@ -93,6 +96,14 @@ dependencies {
 }
 
 junitPlatform {
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+    }
+  }
 }
 
 //packaging tests
