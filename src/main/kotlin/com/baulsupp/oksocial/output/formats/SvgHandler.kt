@@ -9,7 +9,7 @@ import javax.imageio.ImageIO
 
 object SvgHandler {
   fun convertSvgToPng(source: BufferedSource): BufferedSource {
-    val universe = SVGCache.getSVGUniverse()
+    val universe = SVGCache.getSVGUniverse().also { it.isVerbose = false }
 
     var uri = source.inputStream().use { universe.loadSVG(it, "preview") }
 
