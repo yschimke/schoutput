@@ -20,7 +20,6 @@ import java.awt.Desktop
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.IOException
-import java.io.InterruptedIOException
 import java.net.URI
 import java.net.UnknownHostException
 import java.util.Arrays.asList
@@ -28,7 +27,6 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.logging.Level
 import java.util.logging.Logger
-import java.util.regex.Pattern
 
 open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<R>) : OutputHandler<R> {
 
@@ -82,9 +80,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
 
     val cborMapper = cborMapper()
 
-    val map = cborMapper.readValue<Any>(source.inputStream(), object : TypeReference<Map<String, Any>>() {
-
-    })
+    val map = cborMapper.readValue<Any>(source.inputStream(), object : TypeReference<Map<String, Any>>() {})
 
     val om = jsonMapper()
 
@@ -156,29 +152,22 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
     }
   }
 
-  fun terminalWidth(): Int {
-    try {
-      val pe = ProcessExecutor().command("/bin/stty", "-a", "-f", "/dev/tty")
-              .timeout(5, TimeUnit.SECONDS)
-              .redirectError(Slf4jStream.ofCaller().asInfo())
-              .readOutput(true)
+  suspend fun terminalWidth(): Int {
+    val command = if (PlatformUtil.isOSX) arrayOf("/bin/stty", "-a", "-f", "/dev/tty") else arrayOf("/bin/stty", "-a", "-F", "/dev/tty")
 
-      val output = pe.execute().outputString()
+    val output = execCommand(command)
 
-      val p = Pattern.compile("(\\d+) columns", Pattern.MULTILINE)
+    val matchResult = "(\\d+) columns".toRegex(RegexOption.MULTILINE).find(output)
+    return matchResult?.groupValues?.get(1)?.toIntOrNull() ?: 80
+  }
 
-      val m = p.matcher(output)
-      return if (m.find()) {
-        Integer.parseInt(m.group(1))
-      } else {
-        80
-      }
-    } catch (ie: InterruptedException) {
-      throw InterruptedIOException(ie.message)
-    } catch (e: TimeoutException) {
-      throw IOException(e)
-    }
+  suspend fun execCommand(command: Array<String>): String {
+    val pe = ProcessExecutor().command(*command)
+            .timeout(5, TimeUnit.SECONDS)
+            .redirectError(Slf4jStream.ofCaller().asInfo())
+            .readOutput(true)
 
+    return pe.execute().outputString()
   }
 
   companion object {

@@ -17,7 +17,8 @@ object CommandUtil {
 
   @Throws(InterruptedException::class, TimeoutException::class, IOException::class)
   private fun isInstalledInternal(command: String): Boolean {
-    return ProcessExecutor().command("command", "-v", command).execute().exitValue == 0
+    val checkCommand = if (PlatformUtil.isOSX) arrayOf("command", "-v", command) else arrayOf("which", command)
+    return ProcessExecutor().command(*checkCommand).execute().exitValue == 0
   }
 
   fun isInstalled(command: String): Boolean {
@@ -27,7 +28,6 @@ object CommandUtil {
       e.cause!!.printStackTrace()
       false
     }
-
   }
 
   val isTerminal: Boolean
