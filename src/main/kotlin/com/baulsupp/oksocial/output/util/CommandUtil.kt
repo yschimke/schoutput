@@ -1,21 +1,9 @@
 package com.baulsupp.oksocial.output.util
 
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
 import org.zeroturnaround.exec.ProcessExecutor
-import java.io.IOException
 import java.util.concurrent.ExecutionException
-import java.util.concurrent.TimeoutException
 
 object CommandUtil {
-  private val installed = CacheBuilder.newBuilder().build(object : CacheLoader<String, Boolean>() {
-    @Throws(Exception::class)
-    override fun load(command: String): Boolean? {
-      return isInstalledInternal(command)
-    }
-  })
-
-  @Throws(InterruptedException::class, TimeoutException::class, IOException::class)
   private fun isInstalledInternal(command: String): Boolean {
     val checkCommand = if (PlatformUtil.isOSX) arrayOf("command", "-v", command) else arrayOf("which", command)
     return ProcessExecutor().command(*checkCommand).execute().exitValue == 0
@@ -23,7 +11,7 @@ object CommandUtil {
 
   fun isInstalled(command: String): Boolean {
     return try {
-      installed.get(command)
+      isInstalledInternal(command)
     } catch (e: ExecutionException) {
       e.cause!!.printStackTrace()
       false
