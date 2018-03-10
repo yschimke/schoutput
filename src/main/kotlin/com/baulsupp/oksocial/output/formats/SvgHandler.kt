@@ -11,9 +11,9 @@ object SvgHandler {
   fun convertSvgToPng(source: BufferedSource): BufferedSource {
     val universe = SVGCache.getSVGUniverse().also { it.isVerbose = false }
 
-    var uri = source.inputStream().use { universe.loadSVG(it, "preview") }
+    val uri = source.inputStream().use { universe.loadSVG(it, "preview") }
 
-    var icon = SVGIcon()
+    val icon = SVGIcon()
     icon.antiAlias = true
     icon.svgURI = uri
 
