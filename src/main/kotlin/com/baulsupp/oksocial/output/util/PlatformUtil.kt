@@ -13,9 +13,8 @@ object PlatformUtil {
       `in`.close()
       prop.getProperty("version")
     } catch (e: IOException) {
-      throw AssertionError("Could not load " + propertiesFile)
+      throw AssertionError("Could not load $propertiesFile")
     }
-
   }
 
   val isOSX: Boolean

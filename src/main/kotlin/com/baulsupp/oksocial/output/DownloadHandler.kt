@@ -7,7 +7,8 @@ import okio.Sink
 import java.io.File
 import java.io.IOException
 
-class DownloadHandler<R>(private val responseExtractor: ResponseExtractor<R>, private val outputFile: File) : OutputHandler<R> {
+class DownloadHandler<in R>(private val responseExtractor: ResponseExtractor<R>,
+  private val outputFile: File) : OutputHandler<R> {
 
   override fun showOutput(response: R) {
     val source = responseExtractor.source(response)
@@ -27,13 +28,13 @@ class DownloadHandler<R>(private val responseExtractor: ResponseExtractor<R>, pr
       isStdout -> OutputUtil.systemOut()
       outputFile.isDirectory -> {
         val responseOutputFile = File(outputFile, responseExtractor.filename(response))
-        System.err.println("Saving " + responseOutputFile)
+        System.err.println("Saving $responseOutputFile")
         Okio.sink(responseOutputFile)
       }
       else -> {
         if (outputFile.parentFile != null && !outputFile.parentFile.exists()) {
           if (!outputFile.parentFile.mkdirs()) {
-            throw IOException("unable to create directory " + outputFile)
+            throw IOException("unable to create directory $outputFile")
           }
         }
         Okio.sink(outputFile)

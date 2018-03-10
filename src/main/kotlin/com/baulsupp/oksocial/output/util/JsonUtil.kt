@@ -9,13 +9,12 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import java.io.IOException
 
 object JsonUtil {
-  val JSON = "application/json"
+  const val JSON = "application/json"
 
   @Throws(IOException::class)
   fun map(content: String): Map<String, Any> {
     val mapper = jsonMapper()
     return mapper.readValue(content, object : TypeReference<Map<String, Any>>() {
-
     })
   }
 
@@ -27,13 +26,13 @@ object JsonUtil {
 
   fun jsonMapper(): ObjectMapper {
     return ObjectMapper().registerModule(ParameterNamesModule())
-            .registerModule(Jdk8Module())
-            .registerModule(JavaTimeModule())
+      .registerModule(Jdk8Module())
+      .registerModule(JavaTimeModule())
   }
 
   fun cborMapper(): ObjectMapper {
     return ObjectMapper(CBORFactory()).registerModule(ParameterNamesModule())
-            .registerModule(Jdk8Module())
-            .registerModule(JavaTimeModule())
+      .registerModule(Jdk8Module())
+      .registerModule(JavaTimeModule())
   }
 }

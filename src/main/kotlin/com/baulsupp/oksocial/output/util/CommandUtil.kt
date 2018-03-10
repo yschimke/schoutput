@@ -5,7 +5,8 @@ import java.util.concurrent.ExecutionException
 
 object CommandUtil {
   private fun isInstalledInternal(command: String): Boolean {
-    val checkCommand = if (PlatformUtil.isOSX) arrayOf("command", "-v", command) else arrayOf("which", command)
+    val checkCommand = if (PlatformUtil.isOSX) arrayOf("command", "-v", command) else arrayOf(
+      "which", command)
     return ProcessExecutor().command(*checkCommand).execute().exitValue == 0
   }
 

@@ -17,12 +17,12 @@ object MimeTypeUtil {
 
   fun isCbor(mediaType: String): Boolean {
     return isMediaType(mediaType, "application/cbor") || mediaType
-            .endsWith("+cbor")
+      .endsWith("+cbor")
   }
 
   fun isJson(mediaType: String): Boolean {
     return isMediaType(mediaType, "application/json", "text/json") || mediaType
-            .endsWith("+json")
+      .endsWith("+json")
   }
 
   fun isMediaType(mediaType: String?, vararg types: String): Boolean {

@@ -28,7 +28,8 @@ import java.util.concurrent.TimeoutException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<R>) : OutputHandler<R> {
+open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<R>) :
+  OutputHandler<R> {
 
   override fun showError(message: String?, e: Throwable?) {
     if (logger.isLoggable(Level.FINE)) {
@@ -39,7 +40,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
       System.err.println(e.message)
     } else if (e is UnknownHostException && e.cause == null) {
       if (message != null) {
-        System.err.print(message + ": ")
+        System.err.print("$message: ")
       }
       System.err.println(e.toString())
     } else {
@@ -80,7 +81,8 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
 
     val cborMapper = cborMapper()
 
-    val map = cborMapper.readValue<Any>(source.inputStream(), object : TypeReference<Map<String, Any>>() {})
+    val map = cborMapper.readValue<Any>(source.inputStream(),
+      object : TypeReference<Map<String, Any>>() {})
 
     val om = jsonMapper()
 
@@ -95,11 +97,11 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
   }
 
   fun streamToCommand(source: BufferedSource?, command: List<String>,
-                      timeout: Int?) {
+    timeout: Int?) {
     try {
       val pe = ProcessExecutor().command(command)
-              .redirectOutput(System.out)
-              .redirectError(Slf4jStream.ofCaller().asInfo())
+        .redirectOutput(System.out)
+        .redirectError(Slf4jStream.ofCaller().asInfo())
 
       if (timeout != null) {
         pe.timeout(timeout.toLong(), TimeUnit.SECONDS)
@@ -119,7 +121,6 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
     } catch (e: TimeoutException) {
       throw IOException(e)
     }
-
   }
 
   open fun openPreview(response: R) {
@@ -140,7 +141,9 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
 
     val tempFile = File.createTempFile("output", MimeTypeUtil.getExtension(mimeType))
 
-    Okio.sink(tempFile).use { out -> DownloadHandler.writeToSink(responseExtractor.source(response), out) }
+    Okio.sink(tempFile).use { out ->
+      DownloadHandler.writeToSink(responseExtractor.source(response), out)
+    }
     return tempFile
   }
 
@@ -153,7 +156,8 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
   }
 
   suspend fun terminalWidth(): Int {
-    val command = if (PlatformUtil.isOSX) arrayOf("/bin/stty", "-a", "-f", "/dev/tty") else arrayOf("/bin/stty", "-a", "-F", "/dev/tty")
+    val command = if (PlatformUtil.isOSX) arrayOf("/bin/stty", "-a", "-f", "/dev/tty") else arrayOf(
+      "/bin/stty", "-a", "-F", "/dev/tty")
 
     val output = execCommand(command)
 
@@ -163,9 +167,9 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
 
   suspend fun execCommand(command: Array<String>): String {
     val pe = ProcessExecutor().command(*command)
-            .timeout(5, TimeUnit.SECONDS)
-            .redirectError(Slf4jStream.ofCaller().asInfo())
-            .readOutput(true)
+      .timeout(5, TimeUnit.SECONDS)
+      .redirectError(Slf4jStream.ofCaller().asInfo())
+      .readOutput(true)
 
     return pe.execute().outputString()
   }
