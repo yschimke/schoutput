@@ -1,12 +1,17 @@
 package com.baulsupp.oksocial.output
 
-import java.util.Arrays.asList
+import com.baulsupp.oksocial.output.process.exec
+import com.baulsupp.oksocial.output.process.stdErrLogging
+import java.util.concurrent.TimeUnit
 
 open class OsxOutputHandler<R>(responseExtractor: ResponseExtractor<R>) :
   ConsoleHandler<R>(responseExtractor) {
 
-  override fun openPreview(response: R) {
-    streamToCommand(responseExtractor.source(response),
-      asList("open", "-f", "-a", "/Applications/Preview.app"), 30)
+  override suspend fun openPreview(response: R) {
+    exec(listOf("open", "-f", "-a", "/Applications/Preview.app")) {
+      redirectError(stdErrLogging)
+      redirectOutput(stdErrLogging)
+      timeout(30, TimeUnit.SECONDS)
+    }
   }
 }

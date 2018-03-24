@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.output
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory
+import kotlinx.coroutines.experimental.runBlocking
 import okio.BufferedSource
 import okio.Okio
 import org.junit.Test
@@ -11,7 +12,6 @@ import java.util.LinkedHashMap
 
 class ConsoleHandlerTest {
   @Test
-  @Throws(IOException::class)
   fun testCborSupport() {
     val cborMapper = ObjectMapper(CBORFactory())
 
@@ -35,6 +35,8 @@ class ConsoleHandlerTest {
       }
     }
     val c = ConsoleHandler(extractor)
-    c.showOutput(bytes)
+    runBlocking {
+      c.showOutput(bytes)
+    }
   }
 }

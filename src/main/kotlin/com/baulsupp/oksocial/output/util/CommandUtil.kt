@@ -1,22 +1,12 @@
 package com.baulsupp.oksocial.output.util
 
-import org.zeroturnaround.exec.ProcessExecutor
-import java.util.concurrent.ExecutionException
+import com.baulsupp.oksocial.output.process.exec
 
 object CommandUtil {
-  private fun isInstalledInternal(command: String): Boolean {
-    val checkCommand = if (PlatformUtil.isOSX) arrayOf("command", "-v", command) else arrayOf(
-      "which", command)
-    return ProcessExecutor().command(*checkCommand).execute().exitValue == 0
-  }
-
-  fun isInstalled(command: String): Boolean {
-    return try {
-      isInstalledInternal(command)
-    } catch (e: ExecutionException) {
-      e.cause!!.printStackTrace()
-      false
-    }
+  suspend fun isInstalled(command: String): Boolean = if (PlatformUtil.isOSX) {
+    exec("command", "-v", command).success
+  } else {
+    exec("which", command).success
   }
 
   val isTerminal: Boolean

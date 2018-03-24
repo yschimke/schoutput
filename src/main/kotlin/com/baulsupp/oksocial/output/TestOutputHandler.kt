@@ -5,11 +5,11 @@ class TestOutputHandler<R> : OutputHandler<R> {
   val failures: MutableList<Throwable> = mutableListOf()
   val stdout: MutableList<String> = mutableListOf()
 
-  override fun showOutput(response: R) {
+  override suspend fun showOutput(response: R) {
     responses.add(response)
   }
 
-  override fun showError(message: String?, e: Throwable?) {
+  override suspend fun showError(message: String?, e: Throwable?) {
     if (e != null) {
       failures.add(e)
     }

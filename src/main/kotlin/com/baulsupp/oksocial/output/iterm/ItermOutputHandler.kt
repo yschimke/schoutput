@@ -8,7 +8,7 @@ class ItermOutputHandler<R>(responseExtractor: ResponseExtractor<R>) :
   OsxOutputHandler<R>(responseExtractor) {
 
   // https://www.iterm2.com/documentation-images.html
-  override fun openPreview(response: R) {
+  override suspend fun openPreview(response: R) {
     val source = responseExtractor.source(response).let {
       if (responseExtractor.mimeType(response) == "image/svg+xml") {
         SvgHandler.convertSvgToPng(it)

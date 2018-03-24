@@ -8,9 +8,9 @@ import java.io.File
 import java.io.IOException
 
 class DownloadHandler<in R>(private val responseExtractor: ResponseExtractor<R>,
-  private val outputFile: File) : OutputHandler<R> {
+                            private val outputFile: File) : OutputHandler<R> {
 
-  override fun showOutput(response: R) {
+  override suspend fun showOutput(response: R) {
     val source = responseExtractor.source(response)
 
     val outputSink = getOutputSink(response)
@@ -42,8 +42,9 @@ class DownloadHandler<in R>(private val responseExtractor: ResponseExtractor<R>,
     }
   }
 
-  private val isStdout: Boolean
-    get() = outputFile.path == "-"
+  val isStdout by lazy {
+    outputFile.path == "-"
+  }
 
   companion object {
     fun writeToSink(source: BufferedSource, out: Sink) {

@@ -4,7 +4,6 @@ import java.io.IOException
 import java.util.Properties
 
 object PlatformUtil {
-
   fun versionString(mainClass: Class<*>, propertiesFile: String): String {
     return try {
       val prop = Properties()
@@ -17,15 +16,7 @@ object PlatformUtil {
     }
   }
 
-  val isOSX: Boolean
-    get() {
-      val osName = System.getProperty("os.name")
-      return osName.contains("OS X")
-    }
+  val isOSX by lazy { System.getProperty("os.name").contains("OS X") }
 
-  val isLinux: Boolean
-    get() {
-      val osName = System.getProperty("os.name")
-      return osName.contains("Linux")
-    }
+  val isLinux by lazy { System.getProperty("os.name").contains("Linux") }
 }
