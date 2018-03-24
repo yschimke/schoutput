@@ -116,6 +116,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
     val result = exec(command) {
       redirectInput(response.inputStream())
       redirectError(stdErrLogging)
+      redirectOutput(System.out)
     }
 
     if (!result.success) {

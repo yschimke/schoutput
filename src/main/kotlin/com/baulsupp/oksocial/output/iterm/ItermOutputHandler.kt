@@ -4,8 +4,7 @@ import com.baulsupp.oksocial.output.OsxOutputHandler
 import com.baulsupp.oksocial.output.ResponseExtractor
 import com.baulsupp.oksocial.output.formats.SvgHandler
 
-class ItermOutputHandler<R>(responseExtractor: ResponseExtractor<R>) :
-  OsxOutputHandler<R>(responseExtractor) {
+class ItermOutputHandler<R>(responseExtractor: ResponseExtractor<R>) : OsxOutputHandler<R>(responseExtractor) {
 
   // https://www.iterm2.com/documentation-images.html
   override suspend fun openPreview(response: R) {
