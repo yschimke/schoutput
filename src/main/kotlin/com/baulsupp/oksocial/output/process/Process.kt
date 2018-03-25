@@ -1,11 +1,11 @@
 package com.baulsupp.oksocial.output.process
 
+import com.baulsupp.oksocial.output.stdErrLogging
 import okio.ByteString
 import org.apache.commons.io.input.NullInputStream
 import org.zeroturnaround.exec.ProcessExecutor
 import org.zeroturnaround.exec.ProcessResult
 import org.zeroturnaround.exec.listener.ProcessListener
-import org.zeroturnaround.exec.stream.slf4j.Slf4jStream
 import java.nio.charset.StandardCharsets
 import kotlin.coroutines.experimental.suspendCoroutine
 
@@ -15,8 +15,6 @@ data class ExecResult(val exitCode: Int, val output: ByteString?) {
     output?.string(StandardCharsets.UTF_8)!!
   }
 }
-
-val stdErrLogging = Slf4jStream.ofCaller().asInfo()!!
 
 suspend fun exec(vararg command: String): ExecResult {
   return exec(command.toList()) {

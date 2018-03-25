@@ -1,7 +1,5 @@
 package com.baulsupp.oksocial.output
 
-import com.baulsupp.oksocial.output.util.OutputUtil
-import okio.BufferedSource
 import okio.Okio
 import okio.Sink
 import java.io.File
@@ -15,7 +13,7 @@ class DownloadHandler<in R>(private val responseExtractor: ResponseExtractor<R>,
 
     val outputSink = getOutputSink(response)
     try {
-      writeToSink(source, outputSink)
+      source.writeToSink(outputSink)
     } finally {
       if (!isStdout) {
         outputSink.close()
@@ -25,7 +23,7 @@ class DownloadHandler<in R>(private val responseExtractor: ResponseExtractor<R>,
 
   fun getOutputSink(response: R): Sink {
     return when {
-      isStdout -> OutputUtil.systemOut()
+      isStdout -> systemOut
       outputFile.isDirectory -> {
         val responseOutputFile = File(outputFile, responseExtractor.filename(response))
         System.err.println("Saving $responseOutputFile")
@@ -44,14 +42,5 @@ class DownloadHandler<in R>(private val responseExtractor: ResponseExtractor<R>,
 
   val isStdout by lazy {
     outputFile.path == "-"
-  }
-
-  companion object {
-    fun writeToSink(source: BufferedSource, out: Sink) {
-      while (!source.exhausted()) {
-        out.write(source.buffer(), source.buffer().size())
-        out.flush()
-      }
-    }
   }
 }

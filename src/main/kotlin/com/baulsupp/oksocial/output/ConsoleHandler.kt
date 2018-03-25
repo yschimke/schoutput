@@ -1,16 +1,8 @@
 package com.baulsupp.oksocial.output
 
 import com.baulsupp.oksocial.output.iterm.ItermOutputHandler
+import com.baulsupp.oksocial.output.iterm.itermIsAvailable
 import com.baulsupp.oksocial.output.process.exec
-import com.baulsupp.oksocial.output.process.stdErrLogging
-import com.baulsupp.oksocial.output.util.CommandUtil
-import com.baulsupp.oksocial.output.util.MimeTypeUtil
-import com.baulsupp.oksocial.output.util.MimeTypeUtil.isCbor
-import com.baulsupp.oksocial.output.util.MimeTypeUtil.isJson
-import com.baulsupp.oksocial.output.util.MimeTypeUtil.isMedia
-import com.baulsupp.oksocial.output.util.OutputUtil
-import com.baulsupp.oksocial.output.util.PlatformUtil
-import com.baulsupp.oksocial.output.util.UsageException
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory
@@ -34,7 +26,7 @@ import java.util.logging.Logger
 open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<R>) : OutputHandler<R> {
   val jqInstalled by lazy {
     runBlocking {
-      CommandUtil.isInstalled("jq")
+      isInstalled("jq")
     }
   }
 
@@ -79,7 +71,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
     }
 
     // TODO support a nice hex mode for binary files
-    DownloadHandler.writeToSink(source, OutputUtil.systemOut())
+    source.writeToSink(systemOut)
     println("")
   }
 
@@ -111,7 +103,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
   }
 
   suspend fun prettyPrintJson(response: BufferedSource) {
-    val command = if (CommandUtil.isTerminal) asList("jq", "-C", ".") else asList("jq", ".")
+    val command = if (isTerminal) asList("jq", "-C", ".") else asList("jq", ".")
 
     val result = exec(command) {
       redirectInput(response.inputStream())
@@ -132,7 +124,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
     } else {
       System.err.println("Falling back to console output, use -r to avoid warning")
 
-      DownloadHandler.writeToSink(responseExtractor.source(response), OutputUtil.systemOut())
+      responseExtractor.source(response).writeToSink(systemOut)
       println("")
     }
   }
@@ -140,10 +132,10 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
   suspend fun writeToFile(response: R): File {
     val mimeType = responseExtractor.mimeType(response)
 
-    val tempFile = File.createTempFile("output", MimeTypeUtil.getExtension(mimeType))
+    val tempFile = File.createTempFile("output", getExtension(mimeType))
 
     Okio.sink(tempFile).use { out ->
-      DownloadHandler.writeToSink(responseExtractor.source(response), out)
+      responseExtractor.source(response).writeToSink(out)
     }
     return tempFile
   }
@@ -157,7 +149,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
   }
 
   suspend fun terminalWidth(): Int {
-    val command = if (PlatformUtil.isOSX)
+    val command = if (isOSX)
       listOf("/bin/stty", "-a", "-f", "/dev/tty")
     else
       listOf("/bin/stty", "-a", "-F", "/dev/tty")
@@ -175,12 +167,14 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
   companion object {
     private val logger = Logger.getLogger(ConsoleHandler::class.java.name)
 
-    fun instance(re: ResponseExtractor<*>): ConsoleHandler<*> {
+    fun <T> instance(re: ResponseExtractor<T>): ConsoleHandler<T> {
       return when {
-        ItermOutputHandler.isAvailable -> ItermOutputHandler(re)
-        PlatformUtil.isOSX -> OsxOutputHandler(re)
+        itermIsAvailable() -> ItermOutputHandler(re)
+        isOSX -> OsxOutputHandler(re)
         else -> ConsoleHandler(re)
       }
     }
+
+    fun instance(): ConsoleHandler<Any> = instance(ToStringResponseExtractor)
   }
 }
