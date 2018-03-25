@@ -1,10 +1,12 @@
 package com.baulsupp.oksocial.output
 
 import com.baulsupp.oksocial.output.process.exec
+import kotlinx.coroutines.experimental.async
 import okio.BufferedSource
 import okio.Okio
 import okio.Sink
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream
+import java.io.Console
 import java.io.IOException
 import java.util.Properties
 import javax.activation.MimeType
@@ -25,6 +27,18 @@ val stdErrLogging = Slf4jStream.ofCaller().asInfo()!!
 
 val isTerminal by lazy {
   System.console() != null
+}
+
+suspend fun Console.readPasswordString(prompt: String): String {
+  return async {
+    String(readPassword(prompt))
+  }.await()
+}
+
+suspend fun Console.readString(prompt: String): String {
+  return async {
+    readLine(prompt)
+  }.await()
 }
 
 suspend fun isInstalled(command: String): Boolean = if (isOSX) {
