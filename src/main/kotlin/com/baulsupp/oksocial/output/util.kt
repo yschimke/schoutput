@@ -19,7 +19,7 @@ fun BufferedSource.writeToSink(out: Sink) {
   }
 }
 
-val systemOut by lazy {
+val systemOut: Sink by lazy {
   Okio.sink(System.out)
 }
 
@@ -49,6 +49,10 @@ suspend fun isInstalled(command: String): Boolean = if (isOSX) {
 
 fun isMedia(mediaType: String): Boolean {
   return mediaType.startsWith("image/") || mediaType.endsWith("/pdf")
+}
+
+fun isAudio(mediaType: String): Boolean {
+  return mediaType.startsWith("audio/")
 }
 
 fun getExtension(mediaType: String?): String = when (mediaType) {

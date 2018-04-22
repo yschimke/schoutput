@@ -13,6 +13,7 @@ import kotlinx.coroutines.experimental.runBlocking
 import okio.BufferedSource
 import okio.Okio
 import java.awt.Desktop
+import java.io.BufferedInputStream
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.IOException
@@ -22,6 +23,8 @@ import java.util.Arrays.asList
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.sound.sampled.AudioSystem
+import javax.sound.sampled.LineEvent
 
 open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<R>) : OutputHandler<R> {
   val jqInstalled by lazy {
@@ -63,6 +66,9 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
 
       if (isMedia(mimeType)) {
         openPreview(response)
+        return
+      } else if (isAudio(mimeType)) {
+        playAudio(response)
         return
       } else if (jqInstalled && isJson(mimeType)) {
         prettyPrintJson(source)
@@ -113,6 +119,25 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
 
     if (!result.success) {
       throw IOException("return code " + result.exitCode + " from " + command.joinToString(" "))
+    }
+  }
+
+  open suspend fun playAudio(response: R) {
+    val source = responseExtractor.source(response)
+
+    // TODO proper IO handling continuations style also
+    source.inputStream().use {
+      return kotlinx.coroutines.experimental.suspendCancellableCoroutine { c ->
+        val audioIn = AudioSystem.getAudioInputStream(BufferedInputStream(it, 512 * 1024))
+        val clip = AudioSystem.getClip()
+        clip.open(audioIn)
+        clip.addLineListener { event ->
+          if (event.type == LineEvent.Type.STOP) {
+            c.resume(Unit)
+          }
+        }
+        clip.start()
+      }
     }
   }
 
@@ -176,5 +201,13 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
     }
 
     fun instance(): ConsoleHandler<Any> = instance(ToStringResponseExtractor)
+  }
+}
+
+fun main(args: Array<String>) {
+  val c = ConsoleHandler(FileResponseExtractor)
+
+  runBlocking {
+    c.playAudio(File("/Users/yuri/Downloads/07018050.wav"))
   }
 }
