@@ -5,8 +5,10 @@ import okio.Sink
 import java.io.File
 import java.io.IOException
 
-class DownloadHandler<in R>(private val responseExtractor: ResponseExtractor<R>,
-                            private val outputFile: File) : OutputHandler<R> {
+class DownloadHandler<in R>(
+  private val responseExtractor: ResponseExtractor<R>,
+  private val outputFile: File
+) : OutputHandler<R> {
 
   override suspend fun showOutput(response: R) {
     val source = responseExtractor.source(response)

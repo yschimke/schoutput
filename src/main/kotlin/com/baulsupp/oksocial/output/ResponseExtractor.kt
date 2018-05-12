@@ -15,7 +15,7 @@ object ToStringResponseExtractor : ResponseExtractor<Any> {
   override fun filename(response: Any): String? = null
 }
 
-object FileResponseExtractor: ResponseExtractor<File> {
+object FileResponseExtractor : ResponseExtractor<File> {
   override fun mimeType(response: File): String? {
     return Files.probeContentType(response.toPath())
   }
