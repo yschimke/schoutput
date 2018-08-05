@@ -9,7 +9,7 @@ import com.fasterxml.jackson.dataformat.cbor.CBORFactory
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okio.BufferedSource
 import okio.Okio
 import java.awt.Desktop
@@ -25,6 +25,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.LineEvent
+import kotlin.coroutines.resume
 
 open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<R>) : OutputHandler<R> {
   val jqInstalled by lazy {
@@ -127,7 +128,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
 
     // TODO proper IO handling continuations style also
     source.inputStream().use {
-      return kotlinx.coroutines.experimental.suspendCancellableCoroutine { c ->
+      return kotlinx.coroutines.suspendCancellableCoroutine { c ->
         val audioIn = AudioSystem.getAudioInputStream(BufferedInputStream(it, 512 * 1024))
         val clip = AudioSystem.getClip()
         clip.open(audioIn)

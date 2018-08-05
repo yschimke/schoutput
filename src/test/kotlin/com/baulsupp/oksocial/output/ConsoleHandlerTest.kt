@@ -2,12 +2,11 @@ package com.baulsupp.oksocial.output
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okio.BufferedSource
 import okio.Okio
 import org.junit.Test
 import java.io.ByteArrayInputStream
-import java.io.IOException
 import java.util.LinkedHashMap
 
 class ConsoleHandlerTest {
@@ -25,7 +24,6 @@ class ConsoleHandlerTest {
         return "application/cbor"
       }
 
-      @Throws(IOException::class)
       override fun source(response: ByteArray): BufferedSource {
         return Okio.buffer(Okio.source(ByteArrayInputStream(response)))
       }

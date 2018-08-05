@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.output
 
 import com.baulsupp.oksocial.output.process.exec
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.async
 import okio.BufferedSource
 import okio.Okio
 import okio.Sink

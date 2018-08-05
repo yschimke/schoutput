@@ -7,7 +7,9 @@ import org.zeroturnaround.exec.ProcessExecutor
 import org.zeroturnaround.exec.ProcessResult
 import org.zeroturnaround.exec.listener.ProcessListener
 import java.nio.charset.StandardCharsets
-import kotlin.coroutines.experimental.suspendCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 data class ExecResult(val exitCode: Int, val output: ByteString?) {
   val success = exitCode == 0
