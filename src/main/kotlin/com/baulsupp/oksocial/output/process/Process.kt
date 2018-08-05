@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import okio.ByteString.Companion.toByteString
 
 data class ExecResult(val exitCode: Int, val output: ByteString?) {
   val success = exitCode == 0
@@ -46,7 +47,7 @@ suspend fun exec(command: List<String>, configure: ProcessExecutor.() -> Unit = 
         try {
           val outputString = if (outputRequested) {
             val output = result.output()
-            ByteString.of(output, 0, output.size)
+            output.toByteString()
           } else {
             null
           }

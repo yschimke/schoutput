@@ -3,8 +3,8 @@ package com.baulsupp.oksocial.output
 import com.baulsupp.oksocial.output.process.exec
 import kotlinx.coroutines.async
 import okio.BufferedSource
-import okio.Okio
 import okio.Sink
+import okio.sink
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream
 import java.io.Console
 import java.io.IOException
@@ -14,13 +14,13 @@ import javax.activation.MimeTypeParseException
 
 fun BufferedSource.writeToSink(out: Sink) {
   while (!this.exhausted()) {
-    out.write(this.buffer(), this.buffer().size())
+    out.write(this.buffer(), this.buffer().size)
     out.flush()
   }
 }
 
 val systemOut: Sink by lazy {
-  Okio.sink(System.out)
+  System.out.sink()
 }
 
 val stdErrLogging = Slf4jStream.ofCaller().asInfo()!!

@@ -11,7 +11,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import kotlinx.coroutines.runBlocking
 import okio.BufferedSource
-import okio.Okio
+import okio.buffer
+import okio.sink
+import okio.source
 import java.awt.Desktop
 import java.io.BufferedInputStream
 import java.io.ByteArrayInputStream
@@ -106,7 +108,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
 
     val bytes = om.writeValueAsBytes(map)
 
-    return Okio.buffer(Okio.source(ByteArrayInputStream(bytes)))
+    return ByteArrayInputStream(bytes).source().buffer()
   }
 
   suspend fun prettyPrintJson(response: BufferedSource) {
@@ -160,7 +162,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
 
     val tempFile = File.createTempFile("output", getExtension(mimeType))
 
-    Okio.sink(tempFile).use { out ->
+    tempFile.sink().use { out ->
       responseExtractor.source(response).writeToSink(out)
     }
     return tempFile

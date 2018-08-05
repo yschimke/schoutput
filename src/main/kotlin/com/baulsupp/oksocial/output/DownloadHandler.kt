@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.output
 
-import okio.Okio
 import okio.Sink
+import okio.sink
 import java.io.File
 import java.io.IOException
 
@@ -29,7 +29,7 @@ class DownloadHandler<in R>(
       outputFile.isDirectory -> {
         val responseOutputFile = File(outputFile, responseExtractor.filename(response))
         System.err.println("Saving $responseOutputFile")
-        Okio.sink(responseOutputFile)
+        responseOutputFile.sink()
       }
       else -> {
         if (outputFile.parentFile != null && !outputFile.parentFile.exists()) {
@@ -37,7 +37,7 @@ class DownloadHandler<in R>(
             throw IOException("unable to create directory $outputFile")
           }
         }
-        Okio.sink(outputFile)
+        outputFile.sink()
       }
     }
   }

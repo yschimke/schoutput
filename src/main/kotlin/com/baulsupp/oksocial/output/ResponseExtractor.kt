@@ -1,7 +1,8 @@
 package com.baulsupp.oksocial.output
 
 import okio.BufferedSource
-import okio.Okio
+import okio.buffer
+import okio.source
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.nio.file.Files
@@ -10,7 +11,7 @@ object ToStringResponseExtractor : ResponseExtractor<Any> {
   override fun mimeType(response: Any): String = "text/plain"
 
   override fun source(response: Any): BufferedSource =
-    Okio.buffer(Okio.source(ByteArrayInputStream(response.toString().toByteArray())))
+    ByteArrayInputStream(response.toString().toByteArray()).source().buffer()
 
   override fun filename(response: Any): String? = null
 }
@@ -21,7 +22,7 @@ object FileResponseExtractor : ResponseExtractor<File> {
   }
 
   override fun source(response: File): BufferedSource {
-    return Okio.buffer(Okio.source(response))
+    return response.source().buffer()
   }
 
   override fun filename(response: File): String {

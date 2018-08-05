@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory
 import kotlinx.coroutines.runBlocking
 import okio.BufferedSource
-import okio.Okio
+import okio.buffer
+import okio.source
 import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.util.LinkedHashMap
@@ -25,7 +26,7 @@ class ConsoleHandlerTest {
       }
 
       override fun source(response: ByteArray): BufferedSource {
-        return Okio.buffer(Okio.source(ByteArrayInputStream(response)))
+        return ByteArrayInputStream(response).source().buffer()
       }
 
       override fun filename(response: ByteArray): String {
