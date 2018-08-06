@@ -30,7 +30,7 @@ RELEASE_BODY=$(cat <<EOF
 EOF
 )
 
-RELEASE_ID=$(oksocial -d "$RELEASE_BODY" https://api.github.com/repos/yschimke/oksocial-output/releases | jq .id)
+RELEASE_ID=$(okurl -d "$RELEASE_BODY" https://api.github.com/repos/yschimke/oksocial-output/releases | jq .id)
 
 echo Created "https://api.github.com/repos/yschimke/oksocial-output/releases/${RELEASE_ID}"
 
