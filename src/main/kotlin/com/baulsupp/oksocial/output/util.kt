@@ -1,6 +1,9 @@
 package com.baulsupp.oksocial.output
 
 import com.baulsupp.oksocial.output.process.exec
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.async
 import okio.BufferedSource
 import okio.Sink
@@ -14,7 +17,7 @@ import javax.activation.MimeTypeParseException
 
 fun BufferedSource.writeToSink(out: Sink) {
   while (!this.exhausted()) {
-    out.write(this.buffer(), this.buffer().size)
+    out.write(this.buffer, this.buffer.size)
     out.flush()
   }
 }
@@ -30,13 +33,13 @@ val isTerminal by lazy {
 }
 
 suspend fun Console.readPasswordString(prompt: String): String {
-  return async {
+  return GlobalScope.async(Dispatchers.IO) {
     String(readPassword(prompt))
   }.await()
 }
 
 suspend fun Console.readString(prompt: String): String {
-  return async {
+  return GlobalScope.async(Dispatchers.IO) {
     readLine(prompt)
   }.await()
 }
