@@ -1,13 +1,16 @@
+import com.jfrog.bintray.gradle.BintrayExtension
+import org.gradle.api.publish.maven.MavenPom
+import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
   kotlin("jvm") version "1.3.0-rc-116"
   `maven-publish`
-  signing
   id("com.github.ben-manes.versions") version "0.20.0"
-  id("net.nemerosa.versioning") version "2.7.1"
-  id("io.codearte.nexus-staging") version "0.12.0"
   id("org.jlleitschuh.gradle.ktlint") version "6.1.0"
+  id("com.jfrog.bintray") version "1.8.4"
+  id("org.jetbrains.dokka") version "0.9.17"
 }
 
 repositories {
@@ -19,22 +22,14 @@ repositories {
 }
 
 group = "com.baulsupp"
+val artifactID = "oksocial-output"
 description = "OkHttp Social Output"
+val projectVersion = "4.20"
+version = projectVersion
 
 base {
   archivesBaseName = "oksocial-output"
 }
-
-
-//
-//versioning {
-//  // TODO automate this
-//  releaseMode = project.hasProperty('releaseMode') ? project.property('releaseMode') : 'snapshot'
-//}
-//
-//version = versioning.info.display
-//
-//
 
 java {
   sourceCompatibility = JavaVersion.VERSION_1_8
@@ -46,6 +41,16 @@ tasks {
     kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.apiVersion = "1.3"
     kotlinOptions.languageVersion = "1.3"
+  }
+}
+
+tasks {
+  "dokka"(DokkaTask::class) {
+    outputFormat = "javadoc"
+    outputDirectory = "$buildDir/javadoc"
+  }
+  withType<GenerateMavenPom> {
+    destination = file("$buildDir/libs/${jar.get().baseName}.pom")
   }
 }
 
@@ -75,92 +80,70 @@ dependencies {
   testRuntime(Deps.slf4jJdk14)
 }
 
-//publishing {
-//  publications {
-//    mavenJava(MavenPublication) {
-//      from components.java
-//    }
-//  }
-//}
-//
-////packaging tests
-//task packageTests(type: Jar) {
-//  from sourceSets.test.output
-//  classifier = 'tests'
-//}
-//
-//task javadocJar(type: Jar) {
-//  classifier = 'javadoc'
-//  from javadoc
-//}
-//
-//task sourcesJar(type: Jar) {
-//  classifier = 'sources'
-//  from sourceSets.main.allSource
-//}
-//
-//artifacts {
-//  archives javadocJar, sourcesJar, packageTests, jar
-//}
-//
-//// TODO support publish to maven local
-//
-//if (project.hasProperty('ossrhUser')) {
-//  signing {
-//    sign configurations.archives
-//  }
-//
-//  nexusStaging {
-//    username = ossrhUser
-//    password = ossrhPassword
-////  packageGroup = "org.mycompany.myproject" //optional if packageGroup == project.getGroup()
-////  stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
-//  }
-//
-//  uploadArchives {
-//    repositories {
-//      mavenDeployer {
-//        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-//
-//        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-//          authentication(userName: ossrhUser, password: ossrhPassword)
-//        }
-//
-//        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-//          authentication(userName: ossrhUser, password: ossrhPassword)
-//        }
-//
-//        pom.project {
-//          name project.name
-//          group 'com.baulsupp'
-//          description "Command Line Output Library"
-//          url "https://github.com/yschimke/oksocial-output"
-//
-//          scm {
-//            connection 'scm:git:https://github.com/yschimke/oksocial-output.git'
-//            developerConnection 'scm:git:git@github.com:yschimke/oksocial-output.git'
-//            url 'https://github.com/yschimke/oksocial-output.git'
-//          }
-//
-//          licenses {
-//            license {
-//              name 'Apache License'
-//              url 'http://opensource.org/licenses/apache-2.0'
-//              distribution 'repo'
-//            }
-//          }
-//
-//          developers {
-//            developer {
-//              id = 'yschimke'
-//              name = 'Yuri Schimke'
-//              email = 'yuri@schimke.ee'
-//            }
-//          }
-//
-//          packaging 'jar'
-//        }
-//      }
-//    }
-//  }
-//}
+val sourcesJar by tasks.creating(Jar::class) {
+  classifier = "sources"
+  from(kotlin.sourceSets["main"].kotlin)
+}
+
+val javadocJar by tasks.creating(Jar::class) {
+  classifier = "javadoc"
+  from("$buildDir/javadoc")
+}
+
+val jar = tasks["jar"] as org.gradle.jvm.tasks.Jar
+
+fun MavenPom.addDependencies() = withXml {
+  asNode().appendNode("dependencies").let { depNode ->
+    configurations.implementation.get().allDependencies.forEach {
+      depNode.appendNode("dependency").apply {
+        appendNode("groupId", it.group)
+        appendNode("artifactId", it.name)
+        appendNode("version", it.version)
+      }
+    }
+  }
+}
+
+publishing {
+  publications {
+    create("mavenJava", MavenPublication::class) {
+      artifactId = artifactID
+      groupId = project.group.toString()
+      version = project.version.toString()
+      description = project.description
+      artifact(jar)
+      artifact(sourcesJar) {
+        classifier = "sources"
+      }
+      artifact(javadocJar) {
+        classifier = "javadoc"
+      }
+      pom.addDependencies()
+      pom {
+        packaging = "jar"
+      }
+    }
+  }
+}
+
+fun findProperty(s: String) = project.findProperty(s) as String?
+bintray {
+  user = findProperty("baulsuppBintrayUser")
+  key = findProperty("baulsuppBintrayKey")
+  publish = true
+  setPublications("mavenJava")
+  pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
+    repo = "baulsupp.com"
+    name = "oksocial-output"
+    userOrg = user
+    websiteUrl = "https://github.com/yschimke/oksocial-output"
+    githubRepo = "yschimke/oksocial-output"
+    vcsUrl = "https://github.com/yschimke/oksocial-output.git"
+    desc = project.description
+    setLabels("kotlin")
+    setLicenses("Apache-2.0")
+    version(delegateClosureOf<BintrayExtension.VersionConfig> {
+      name = project.version.toString()
+    })
+  })
+}

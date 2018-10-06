@@ -1,5 +1,8 @@
 package com.baulsupp.oksocial.output
 
+/**
+ * Interface for command line apps to output content.
+ */
 interface OutputHandler<in R> {
   suspend fun showOutput(response: R)
 
