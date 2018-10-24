@@ -36,4 +36,4 @@ echo Created "https://api.github.com/repos/yschimke/oksocial-output/releases/${R
 
 ./gradlew -q clean jar
 
-./gradlew uploadArchives closeAndReleaseRepository
+./gradlew bintrayUpload

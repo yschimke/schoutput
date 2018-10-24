@@ -5,12 +5,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-  kotlin("jvm") version "1.3.0-rc-116"
+  kotlin("jvm") version "1.3.0-rc-190"
   `maven-publish`
   id("com.github.ben-manes.versions") version "0.20.0"
   id("org.jlleitschuh.gradle.ktlint") version "6.1.0"
   id("com.jfrog.bintray") version "1.8.4"
   id("org.jetbrains.dokka") version "0.9.17"
+//  id("com.palantir.git-version") version "0.12.0-rc2"
+  id("net.nemerosa.versioning") version "2.8.2"
 }
 
 repositories {
@@ -24,7 +26,8 @@ repositories {
 group = "com.baulsupp"
 val artifactID = "oksocial-output"
 description = "OkHttp Social Output"
-val projectVersion = "4.20"
+val projectVersion = versioning.info.display
+println("Version $projectVersion")
 version = projectVersion
 
 base {
@@ -121,6 +124,25 @@ publishing {
       pom.addDependencies()
       pom {
         packaging = "jar"
+        developers {
+          developer {
+            email.set("yuri@schimke.ee")
+            id.set("yschimke")
+            name.set("Yuri Schimke")
+          }
+        }
+        licenses {
+          license {
+            name.set("Apache License")
+            url.set("http://opensource.org/licenses/apache-2.0")
+            distribution.set("repo")
+          }
+        }
+        scm {
+          connection.set("scm:git:https://github.com/yschimke/okurl.git")
+          developerConnection.set("scm:git:git@github.com:yschimke/okurl.git")
+          url.set("https://github.com/yschimke/okurl.git")
+        }
       }
     }
   }

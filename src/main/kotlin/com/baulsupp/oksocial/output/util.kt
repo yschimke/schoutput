@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.output
 import com.baulsupp.oksocial.output.process.exec
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.async
 import okio.BufferedSource
 import okio.Sink

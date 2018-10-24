@@ -1,12 +1,13 @@
 object Versions {
   val kotlin = "1.3.0-rc-116"
   val jackson = "2.9.7"
+  val kotlinCoroutines = "1.0.0-RC1"
 }
 
 object Deps {
   val kotlinStandardLibrary = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
   val kotlinReflect = "org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}"
-  val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.30.1-eap13"
+  val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
   val jfreesvg = "org.jfree:jfreesvg:3.3"
   val svgSalamander = "com.kitfox.svg:svg-salamander:1.0"
   val ztExec = "org.zeroturnaround:zt-exec:1.10"
