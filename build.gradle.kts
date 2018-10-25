@@ -5,13 +5,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-  kotlin("jvm") version "1.3.0-rc-190"
+  kotlin("jvm") version Versions.kotlin
   `maven-publish`
   id("com.github.ben-manes.versions") version "0.20.0"
-  id("org.jlleitschuh.gradle.ktlint") version "6.1.0"
+  id("org.jlleitschuh.gradle.ktlint") version "6.2.0"
   id("com.jfrog.bintray") version "1.8.4"
   id("org.jetbrains.dokka") version "0.9.17"
-//  id("com.palantir.git-version") version "0.12.0-rc2"
   id("net.nemerosa.versioning") version "2.8.2"
 }
 
