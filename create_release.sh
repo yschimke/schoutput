@@ -14,10 +14,6 @@ git co -b "$BRANCH"
 
 git push origin "$BRANCH"
 
-git tag "$TAG_VERSION"
-
-git push origin "$TAG_VERSION"
-
 RELEASE_BODY=$(cat <<EOF
 {
   "tag_name": "${TAG_VERSION}",
@@ -34,6 +30,8 @@ RELEASE_ID=$(okurl -d "$RELEASE_BODY" https://api.github.com/repos/yschimke/okso
 
 echo Created "https://api.github.com/repos/yschimke/oksocial-output/releases/${RELEASE_ID}"
 
-./gradlew -q clean jar
+./gradlew -q clean jar bintrayUpload
 
-./gradlew bintrayUpload
+git tag "$TAG_VERSION"
+
+git push origin "$TAG_VERSION"
