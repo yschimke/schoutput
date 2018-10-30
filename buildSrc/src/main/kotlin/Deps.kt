@@ -1,5 +1,5 @@
 object Versions {
-  val kotlin = "1.3.0-rc-198"
+  val kotlin = "1.3.0"
   val jackson = "2.9.7"
   val kotlinCoroutines = "1.0.0-RC1"
 }
