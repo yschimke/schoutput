@@ -1,7 +1,7 @@
 object Versions {
   val jackson = "2.9.7"
-  val kotlin = "1.3.0"
-  val kotlinCoroutines = "1.0.0"
+  val kotlin = "1.3.10"
+  val kotlinCoroutines = "1.0.1"
 }
 
 object Deps {
