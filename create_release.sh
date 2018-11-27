@@ -35,3 +35,5 @@ echo Created "https://api.github.com/repos/yschimke/oksocial-output/releases/${R
 git tag "$TAG_VERSION"
 
 git push origin "$TAG_VERSION"
+
+git co master
