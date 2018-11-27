@@ -1,5 +1,6 @@
 object Versions {
   val jackson = "2.9.7"
+  val junit = "5.3.2"
   val kotlin = "1.3.10"
   val kotlinCoroutines = "1.0.1"
 }
@@ -15,8 +16,8 @@ object Deps {
   val jacksonParams = "com.fasterxml.jackson.module:jackson-module-parameter-names:${Versions.jackson}"
   val jacksonYaml = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${Versions.jackson}"
   val jfreesvg = "org.jfree:jfreesvg:3.3"
-  val junitJupiterApi = "org.junit.jupiter:junit-jupiter-api:5.3.1"
-  val junitJupiterEngine = "org.junit.jupiter:junit-jupiter-engine:5.3.1"
+  val junitJupiterApi = "org.junit.jupiter:junit-jupiter-api:${Versions.junit}"
+  val junitJupiterEngine = "org.junit.jupiter:junit-jupiter-engine:${Versions.junit}"
   val kotlinReflect = "org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}"
   val kotlinStandardLibrary = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
   val kotlinTest = "org.jetbrains.kotlin:kotlin-test:${Versions.kotlin}"
