@@ -57,8 +57,6 @@ tasks {
 }
 
 dependencies {
-  implementation(platform("com.fasterxml.jackson:jackson-bom:${Versions.jackson}"))
-
   implementation(Deps.activation)
   implementation(Deps.byteunits)
   implementation(Deps.coroutinesCore)
