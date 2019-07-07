@@ -6,12 +6,12 @@ import org.jetbrains.dokka.gradle.DokkaTask
 plugins {
   kotlin("jvm") version Versions.kotlin
   `maven-publish`
-  id("com.github.ben-manes.versions") version "0.20.0"
+  id("com.github.ben-manes.versions") version "0.21.0"
   id("com.jfrog.bintray") version "1.8.4"
-  id("org.jetbrains.dokka") version "0.9.17"
+  id("org.jetbrains.dokka") version "0.9.18"
   id("net.nemerosa.versioning") version "2.8.2"
-  id("com.palantir.consistent-versions") version "1.4.0"
-  id("com.diffplug.gradle.spotless") version "3.13.0"
+  id("com.palantir.consistent-versions") version "1.9.2"
+  id("com.diffplug.gradle.spotless") version "3.23.1"
 }
 
 repositories {
@@ -73,6 +73,7 @@ dependencies {
   implementation("org.slf4j:slf4j-api")
   implementation("com.kitfox.svg:svg-salamander")
   implementation("org.zeroturnaround:zt-exec")
+  implementation("commons-io:commons-io")
 
   testImplementation("org.junit.jupiter:junit-jupiter-api")
   testImplementation("org.jetbrains.kotlin:kotlin-test")
