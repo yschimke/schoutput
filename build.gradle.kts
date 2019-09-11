@@ -6,12 +6,12 @@ import org.jetbrains.dokka.gradle.DokkaTask
 plugins {
   kotlin("jvm") version Versions.kotlin
   `maven-publish`
-  id("com.github.ben-manes.versions") version "0.21.0"
+  id("com.github.ben-manes.versions") version "0.25.0"
   id("com.jfrog.bintray") version "1.8.4"
   id("org.jetbrains.dokka") version "0.9.18"
   id("net.nemerosa.versioning") version "2.8.2"
   id("com.palantir.consistent-versions") version "1.9.2"
-  id("com.diffplug.gradle.spotless") version "3.23.1"
+  id("com.diffplug.gradle.spotless") version "3.24.2"
 }
 
 repositories {
