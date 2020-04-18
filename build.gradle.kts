@@ -1,17 +1,17 @@
 import com.jfrog.bintray.gradle.BintrayExtension
 import org.gradle.api.publish.maven.MavenPom
+import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
   kotlin("jvm") version Versions.kotlin
   `maven-publish`
-  id("com.github.ben-manes.versions") version "0.25.0"
-  id("com.jfrog.bintray") version "1.8.4"
-  id("org.jetbrains.dokka") version "0.9.18"
-  id("net.nemerosa.versioning") version "2.8.2"
-  id("com.palantir.consistent-versions") version "1.9.2"
-  id("com.diffplug.gradle.spotless") version "3.24.2"
+  id("com.github.ben-manes.versions") version "0.28.0"
+  id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
+  id("com.jfrog.bintray") version "1.8.5"
+  id("org.jetbrains.dokka") version "0.10.1"
+  id("net.nemerosa.versioning") version "2.12.1"
 }
 
 repositories {
@@ -57,30 +57,29 @@ tasks {
 }
 
 dependencies {
-  implementation("javax.activation:activation")
-  implementation("com.jakewharton.byteunits:byteunits")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
-  implementation("com.fasterxml.jackson.core:jackson-databind")
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-  implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
-  implementation("org.jfree:jfreesvg")
-  implementation("org.jetbrains.kotlin:kotlin-reflect")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-  implementation("com.squareup.okio:okio")
-  implementation("org.slf4j:slf4j-api")
-  implementation("com.kitfox.svg:svg-salamander")
-  implementation("org.zeroturnaround:zt-exec")
-  implementation("commons-io:commons-io")
+  implementation(Deps.activation)
+  implementation(Deps.byteunits)
+  implementation(Deps.coroutinesCore)
+  implementation(Deps.jacksonCbor)
+  implementation(Deps.jacksonDatabind)
+  implementation(Deps.jacksonJdk8)
+  implementation(Deps.jacksonJsr310)
+  implementation(Deps.jacksonParams)
+  implementation(Deps.jacksonYaml)
+  implementation(Deps.jfreesvg)
+  implementation(Deps.kotlinReflect)
+  implementation(Deps.kotlinStandardLibrary)
+  implementation(Deps.okio)
+  implementation(Deps.slf4jApi)
+  implementation(Deps.svgSalamander)
+  implementation(Deps.ztExec)
 
-  testImplementation("org.junit.jupiter:junit-jupiter-api")
-  testImplementation("org.jetbrains.kotlin:kotlin-test")
-  testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+  testImplementation(Deps.junitJupiterApi)
+  testImplementation(Deps.kotlinTest)
+  testImplementation(Deps.kotlinTestJunit)
 
-  testRuntime("org.junit.jupiter:junit-jupiter-engine")
-  testRuntime("org.slf4j:slf4j-jdk14")
+  testRuntime(Deps.junitJupiterEngine)
+  testRuntime(Deps.slf4jJdk14)
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
@@ -94,14 +93,6 @@ val javadocJar by tasks.creating(Jar::class) {
 }
 
 val jar = tasks["jar"] as org.gradle.jvm.tasks.Jar
-
-spotless {
-  kotlinGradle {
-    ktlint("0.31.0").userData(mutableMapOf("indent_size" to "2", "continuation_indent_size" to "2"))
-    trimTrailingWhitespace()
-    endWithNewline()
-  }
-}
 
 fun MavenPom.addDependencies() = withXml {
   asNode().appendNode("dependencies").let { depNode ->

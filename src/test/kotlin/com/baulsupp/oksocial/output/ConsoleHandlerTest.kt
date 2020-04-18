@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.output
 
-import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory
 import kotlinx.coroutines.runBlocking
@@ -14,8 +13,7 @@ import java.util.LinkedHashMap
 class ConsoleHandlerTest {
   @Test
   fun testCborSupport() {
-    val cborFactory: JsonFactory = CBORFactory()
-    val cborMapper = ObjectMapper(cborFactory)
+    val cborMapper = ObjectMapper(CBORFactory())
 
     val s = LinkedHashMap<String, String>()
     s["a"] = "AAA"
