@@ -101,8 +101,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
 
     val cborMapper = cborMapper()
 
-    val map = cborMapper.readValue<Any>(source.inputStream(),
-      object : TypeReference<Map<String, Any>>() {})
+    val map = cborMapper.readValue(source.inputStream(), object : TypeReference<Map<String, Any>>() {})
 
     val om = jsonMapper()
 

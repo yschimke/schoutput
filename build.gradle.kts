@@ -18,7 +18,7 @@ repositories {
   jcenter()
   mavenCentral()
   maven(url = "https://jitpack.io")
-  maven(url = "http://repo.maven.apache.org/maven2")
+  maven(url = "https://repo.maven.apache.org/maven2")
   maven(url = "https://dl.bintray.com/kotlin/kotlin-eap/")
 }
 
