@@ -3,6 +3,7 @@ plugins {
   `maven-publish`
   id("com.github.ben-manes.versions") version "0.28.0"
   id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
+  id("net.nemerosa.versioning") version "2.8.2"
 }
 
 repositories {
@@ -13,13 +14,8 @@ repositories {
   maven(url = "https://dl.bintray.com/kotlin/kotlin-eap/")
 }
 
-group = "com.baulsupp"
-val artifactID = "oksocial-output"
-description = "OkHttp Social Output"
-
-base {
-  archivesBaseName = "oksocial-output"
-}
+group = "com.github.yschimke"
+version = versioning.info.display
 
 java {
   sourceCompatibility = JavaVersion.VERSION_1_8
@@ -56,4 +52,21 @@ dependencies {
 
   testRuntime(Deps.junitJupiterEngine)
   testRuntime(Deps.slf4jJdk14)
+}
+
+val sourcesJar by tasks.registering(Jar::class) {
+  classifier = "sources"
+  from(sourceSets.main.get().allSource)
+}
+
+publishing {
+  repositories {
+    maven(url = "build/repository")
+  }
+  publications {
+    register("mavenJava", MavenPublication::class) {
+      from(components["java"])
+      artifact(sourcesJar.get())
+    }
+  }
 }

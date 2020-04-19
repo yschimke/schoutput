@@ -1,1 +1,1 @@
-
+rootProject.name = "oksocial-output"
