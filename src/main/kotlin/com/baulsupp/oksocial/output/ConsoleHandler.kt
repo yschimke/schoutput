@@ -9,11 +9,6 @@ import com.fasterxml.jackson.dataformat.cbor.CBORFactory
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
-import kotlinx.coroutines.runBlocking
-import okio.BufferedSource
-import okio.buffer
-import okio.sink
-import okio.source
 import java.awt.Desktop
 import java.io.BufferedInputStream
 import java.io.ByteArrayInputStream
@@ -28,6 +23,11 @@ import java.util.logging.Logger
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.LineEvent
 import kotlin.coroutines.resume
+import kotlinx.coroutines.runBlocking
+import okio.BufferedSource
+import okio.buffer
+import okio.sink
+import okio.source
 
 open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<R>) : OutputHandler<R> {
   val jqInstalled by lazy {

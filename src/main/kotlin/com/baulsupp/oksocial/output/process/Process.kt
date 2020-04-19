@@ -1,16 +1,16 @@
 package com.baulsupp.oksocial.output.process
 
 import com.baulsupp.oksocial.output.stdErrLogging
-import okio.ByteString
-import okio.ByteString.Companion.toByteString
-import org.zeroturnaround.exec.ProcessExecutor
-import org.zeroturnaround.exec.ProcessResult
-import org.zeroturnaround.exec.listener.ProcessListener
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import okio.ByteString
+import okio.ByteString.Companion.toByteString
+import org.zeroturnaround.exec.ProcessExecutor
+import org.zeroturnaround.exec.ProcessResult
+import org.zeroturnaround.exec.listener.ProcessListener
 
 data class ExecResult(val exitCode: Int, val output: ByteString?) {
   val success = exitCode == 0

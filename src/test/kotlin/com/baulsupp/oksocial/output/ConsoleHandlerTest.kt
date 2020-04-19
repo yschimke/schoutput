@@ -2,13 +2,13 @@ package com.baulsupp.oksocial.output
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory
+import java.io.ByteArrayInputStream
+import java.util.LinkedHashMap
 import kotlinx.coroutines.runBlocking
 import okio.BufferedSource
 import okio.buffer
 import okio.source
 import org.junit.Test
-import java.io.ByteArrayInputStream
-import java.util.LinkedHashMap
 
 class ConsoleHandlerTest {
   @Test

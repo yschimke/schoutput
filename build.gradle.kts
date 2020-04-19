@@ -1,17 +1,8 @@
-import com.jfrog.bintray.gradle.BintrayExtension
-import org.gradle.api.publish.maven.MavenPom
-import org.jetbrains.dokka.gradle.DokkaPlugin
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.dokka.gradle.DokkaTask
-
 plugins {
   kotlin("jvm") version Versions.kotlin
   `maven-publish`
   id("com.github.ben-manes.versions") version "0.28.0"
   id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
-  id("com.jfrog.bintray") version "1.8.5"
-  id("org.jetbrains.dokka") version "0.10.1"
-  id("net.nemerosa.versioning") version "2.12.1"
 }
 
 repositories {
@@ -25,9 +16,6 @@ repositories {
 group = "com.baulsupp"
 val artifactID = "oksocial-output"
 description = "OkHttp Social Output"
-val projectVersion = versioning.info.display!!
-println("Version $projectVersion")
-version = projectVersion
 
 base {
   archivesBaseName = "oksocial-output"
@@ -38,22 +26,10 @@ java {
   targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-tasks {
-  withType(KotlinCompile::class) {
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.apiVersion = "1.3"
     kotlinOptions.languageVersion = "1.3"
-  }
-}
-
-tasks {
-  "dokka"(DokkaTask::class) {
-    outputFormat = "javadoc"
-    outputDirectory = "$buildDir/javadoc"
-  }
-  withType<GenerateMavenPom> {
-    destination = file("$buildDir/libs/${jar.get().baseName}.pom")
-  }
 }
 
 dependencies {
@@ -80,91 +56,4 @@ dependencies {
 
   testRuntime(Deps.junitJupiterEngine)
   testRuntime(Deps.slf4jJdk14)
-}
-
-val sourcesJar by tasks.creating(Jar::class) {
-  classifier = "sources"
-  from(kotlin.sourceSets["main"].kotlin)
-}
-
-val javadocJar by tasks.creating(Jar::class) {
-  classifier = "javadoc"
-  from("$buildDir/javadoc")
-}
-
-val jar = tasks["jar"] as org.gradle.jvm.tasks.Jar
-
-fun MavenPom.addDependencies() = withXml {
-  asNode().appendNode("dependencies").let { depNode ->
-    configurations.implementation.get().allDependencies.forEach {
-      depNode.appendNode("dependency").apply {
-        appendNode("groupId", it.group)
-        appendNode("artifactId", it.name)
-        appendNode("version", it.version)
-      }
-    }
-  }
-}
-
-publishing {
-  publications {
-    create("mavenJava", MavenPublication::class) {
-      artifactId = artifactID
-      groupId = project.group.toString()
-      version = project.version.toString()
-      description = project.description
-      artifact(jar)
-      artifact(sourcesJar) {
-        classifier = "sources"
-      }
-      artifact(javadocJar) {
-        classifier = "javadoc"
-      }
-      pom.addDependencies()
-      pom {
-        packaging = "jar"
-        developers {
-          developer {
-            email.set("yuri@schimke.ee")
-            id.set("yschimke")
-            name.set("Yuri Schimke")
-          }
-        }
-        licenses {
-          license {
-            name.set("Apache License")
-            url.set("http://opensource.org/licenses/apache-2.0")
-            distribution.set("repo")
-          }
-        }
-        scm {
-          connection.set("scm:git:https://github.com/yschimke/okurl.git")
-          developerConnection.set("scm:git:git@github.com:yschimke/okurl.git")
-          url.set("https://github.com/yschimke/okurl.git")
-        }
-      }
-    }
-  }
-}
-
-fun findProperty(s: String) = project.findProperty(s) as String?
-bintray {
-  user = findProperty("baulsuppBintrayUser")
-  key = findProperty("baulsuppBintrayKey")
-  publish = true
-  setPublications("mavenJava")
-  pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
-    repo = "baulsupp.com"
-    name = "oksocial-output"
-    userOrg = user
-    websiteUrl = "https://github.com/yschimke/oksocial-output"
-    githubRepo = "yschimke/oksocial-output"
-    vcsUrl = "https://github.com/yschimke/oksocial-output.git"
-    desc = project.description
-    setLabels("kotlin")
-    setLicenses("Apache-2.0")
-    version(delegateClosureOf<BintrayExtension.VersionConfig> {
-      name = project.version.toString()
-    })
-  })
 }

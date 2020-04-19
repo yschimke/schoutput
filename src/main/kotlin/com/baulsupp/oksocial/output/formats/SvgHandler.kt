@@ -2,10 +2,10 @@ package com.baulsupp.oksocial.output.formats
 
 import com.kitfox.svg.SVGCache
 import com.kitfox.svg.app.beans.SVGIcon
-import okio.Buffer
-import okio.BufferedSource
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
+import okio.Buffer
+import okio.BufferedSource
 
 object SvgHandler {
   fun convertSvgToPng(source: BufferedSource): BufferedSource {

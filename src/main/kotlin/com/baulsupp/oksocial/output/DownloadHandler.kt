@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.output
 
-import okio.Sink
-import okio.sink
 import java.io.File
 import java.io.IOException
+import okio.Sink
+import okio.sink
 
 class DownloadHandler<in R>(
   private val responseExtractor: ResponseExtractor<R>,
