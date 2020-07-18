@@ -1,18 +1,19 @@
 package com.baulsupp.oksocial.output
 
 import com.baulsupp.oksocial.output.process.exec
-import java.io.Console
-import java.io.IOException
-import java.util.Properties
-import javax.activation.MimeType
-import javax.activation.MimeTypeParseException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import okio.BufferedSource
 import okio.Sink
 import okio.sink
+import org.zeroturnaround.exec.stream.slf4j.Slf4jOutputStream
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream
+import java.io.Console
+import java.io.IOException
+import java.util.Properties
+import javax.activation.MimeType
+import javax.activation.MimeTypeParseException
 
 fun BufferedSource.writeToSink(out: Sink) {
   while (!this.exhausted()) {
@@ -25,7 +26,10 @@ val systemOut: Sink by lazy {
   System.out.sink()
 }
 
-val stdErrLogging = Slf4jStream.ofCaller().asInfo()!!
+val stdErrLogging: Slf4jOutputStream by lazy {
+  Slf4jStream.ofCaller()
+    .asInfo()!!
+}
 
 val isTerminal by lazy {
   System.console() != null
@@ -34,13 +38,15 @@ val isTerminal by lazy {
 suspend fun Console.readPasswordString(prompt: String): String {
   return GlobalScope.async(Dispatchers.IO) {
     String(readPassword(prompt))
-  }.await()
+  }
+    .await()
 }
 
 suspend fun Console.readString(prompt: String): String {
   return GlobalScope.async(Dispatchers.IO) {
     readLine(prompt)
-  }.await()
+  }
+    .await()
 }
 
 suspend fun isInstalled(command: String): Boolean = if (isOSX) {
@@ -74,7 +80,10 @@ fun isJson(mediaType: String): Boolean {
     .endsWith("+json")
 }
 
-fun isMediaType(mediaType: String?, vararg types: String): Boolean {
+fun isMediaType(
+  mediaType: String?,
+  vararg types: String
+): Boolean {
   return try {
     if (mediaType == null) {
       return false
@@ -88,7 +97,10 @@ fun isMediaType(mediaType: String?, vararg types: String): Boolean {
   }
 }
 
-fun versionString(mainClass: Class<*>, propertiesFile: String): String {
+fun versionString(
+  mainClass: Class<*>,
+  propertiesFile: String
+): String {
   return try {
     val prop = Properties()
     val `in` = mainClass.getResourceAsStream(propertiesFile)
@@ -100,6 +112,12 @@ fun versionString(mainClass: Class<*>, propertiesFile: String): String {
   }
 }
 
-val isOSX by lazy { System.getProperty("os.name").contains("OS X") }
+val isOSX by lazy {
+  System.getProperty("os.name")
+    .contains("OS X")
+}
 
-val isLinux by lazy { System.getProperty("os.name").contains("Linux") }
+val isLinux by lazy {
+  System.getProperty("os.name")
+    .contains("Linux")
+}
