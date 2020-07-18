@@ -1,6 +1,11 @@
 package com.baulsupp.oksocial.output
 
 import com.baulsupp.oksocial.output.process.exec
+import java.io.Console
+import java.io.IOException
+import java.util.Properties
+import javax.activation.MimeType
+import javax.activation.MimeTypeParseException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -9,11 +14,6 @@ import okio.Sink
 import okio.sink
 import org.zeroturnaround.exec.stream.slf4j.Slf4jOutputStream
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream
-import java.io.Console
-import java.io.IOException
-import java.util.Properties
-import javax.activation.MimeType
-import javax.activation.MimeTypeParseException
 
 fun BufferedSource.writeToSink(out: Sink) {
   while (!this.exhausted()) {
