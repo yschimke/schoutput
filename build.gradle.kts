@@ -42,7 +42,6 @@ dependencies {
   implementation(Deps.kotlinStandardLibrary)
   implementation(Deps.okio)
   implementation(Deps.svgSalamander)
-  implementation(Deps.ztExec)
 
   testImplementation(Deps.junitJupiterApi)
   testImplementation(Deps.kotlinTest)

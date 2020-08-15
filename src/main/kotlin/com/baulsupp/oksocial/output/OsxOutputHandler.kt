@@ -1,14 +1,9 @@
 package com.baulsupp.oksocial.output
 
-import com.baulsupp.oksocial.output.process.exec
-import java.util.concurrent.TimeUnit
+import okio.ByteString
 
 open class OsxOutputHandler<R>(responseExtractor: ResponseExtractor<R>) : ConsoleHandler<R>(responseExtractor) {
   override suspend fun openPreview(response: R) {
-    exec(listOf("open", "-f", "-a", "/Applications/Preview.app")) {
-      redirectError(stdErrLogging)
-      redirectOutput(stdErrLogging)
-      timeout(30, TimeUnit.SECONDS)
-    }
+    exec("open", "-f", "-a", "/Applications/Preview.app")
   }
 }

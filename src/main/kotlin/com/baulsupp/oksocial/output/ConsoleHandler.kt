@@ -2,18 +2,15 @@ package com.baulsupp.oksocial.output
 
 import com.baulsupp.oksocial.output.iterm.ItermOutputHandler
 import com.baulsupp.oksocial.output.iterm.itermIsAvailable
-import com.baulsupp.oksocial.output.process.exec
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.awt.Desktop
-import java.io.BufferedInputStream
-import java.io.ByteArrayInputStream
-import java.io.File
-import java.io.IOException
 import java.net.URI
 import java.net.UnknownHostException
 import java.util.Arrays.asList
@@ -24,10 +21,12 @@ import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.LineEvent
 import kotlin.coroutines.resume
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import okio.BufferedSource
 import okio.buffer
 import okio.sink
 import okio.source
+import java.io.*
 
 open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<R>) : OutputHandler<R> {
   val jqInstalled by lazy {
@@ -111,17 +110,8 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
   }
 
   suspend fun prettyPrintJson(response: BufferedSource) {
-    val command = if (isTerminal) asList("jq", "-C", ".") else asList("jq", ".")
-
-    val result = exec(command) {
-      redirectInput(response.inputStream())
-      redirectError(stdErrLogging)
-      redirectOutput(System.out)
-    }
-
-    if (!result.success) {
-      throw IOException("return code " + result.exitCode + " from " + command.joinToString(" "))
-    }
+    val command = if (isTerminal) arrayOf("jq", "-C", ".") else arrayOf("jq", ".")
+    exec(*command)
   }
 
   open suspend fun playAudio(response: R) {
@@ -175,22 +165,6 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
     }
   }
 
-  suspend fun terminalWidth(): Int {
-    val command = if (isOSX)
-      listOf("/bin/stty", "-a", "-f", "/dev/tty")
-    else
-      listOf("/bin/stty", "-a", "-F", "/dev/tty")
-
-    val result = exec(command) {
-      timeout(5, TimeUnit.SECONDS)
-      redirectError(stdErrLogging)
-      readOutput(true)
-    }
-
-    val matchResult = "(\\d+) columns".toRegex(RegexOption.MULTILINE).find(result.outputString)
-    return matchResult?.groupValues?.get(1)?.toIntOrNull() ?: 80
-  }
-
   companion object {
     private val logger = Logger.getLogger(ConsoleHandler::class.java.name)
 
@@ -202,14 +176,10 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
       }
     }
 
+    enum class OutputMode {
+      Hide, Inherit, Return
+    }
+
     fun instance(): ConsoleHandler<Any> = instance(ToStringResponseExtractor)
-  }
-}
-
-fun main(args: Array<String>) {
-  val c = ConsoleHandler(FileResponseExtractor)
-
-  runBlocking {
-    c.playAudio(File("/Users/yuri/Downloads/07018050.wav"))
   }
 }

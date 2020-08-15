@@ -1,15 +1,17 @@
 package com.baulsupp.oksocial.output
 
-import com.baulsupp.oksocial.output.process.exec
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
 import okio.Sink
 import okio.sink
-import org.zeroturnaround.exec.stream.LogOutputStream
 import java.io.Console
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 import javax.activation.MimeType
 import javax.activation.MimeTypeParseException
@@ -31,14 +33,6 @@ val isTerminal by lazy {
   System.console() != null
 }
 
-val stdErrLogging by lazy {
-  object : LogOutputStream() {
-    override fun processLine(line: String) {
-      Logger.getLogger("STDERR").fine(line)
-    }
-  }
-}
-
 suspend fun Console.readPasswordString(prompt: String): String {
   return withContext(Dispatchers.IO) {
     String(readPassword(prompt))
@@ -52,9 +46,9 @@ suspend fun Console.readString(prompt: String): String {
 }
 
 suspend fun isInstalled(command: String): Boolean = if (isOSX) {
-  exec("command", "-v", command).success
+  execResult("command", "-v", command) == 0
 } else {
-  exec("which", command).success
+  execResult("which", command) == 0
 }
 
 fun isMedia(mediaType: String): Boolean {
@@ -122,4 +116,73 @@ val isOSX by lazy {
 val isLinux by lazy {
   System.getProperty("os.name")
     .contains("Linux")
+}
+
+@Suppress("BlockingMethodInNonBlockingContext")
+suspend fun exec(vararg commandLine: String, outputMode: ConsoleHandler.Companion.OutputMode = ConsoleHandler.Companion.OutputMode.Hide, inputStream: InputStream? = null): String? {
+  var result: String? = null
+
+  withContext(Dispatchers.IO) {
+    val process = ProcessBuilder(*commandLine)
+      .apply {
+        if (outputMode == ConsoleHandler.Companion.OutputMode.Inherit) {
+          redirectError(ProcessBuilder.Redirect.INHERIT)
+          redirectOutput(ProcessBuilder.Redirect.INHERIT)
+        } else if (outputMode == ConsoleHandler.Companion.OutputMode.Return) {
+          redirectError(ProcessBuilder.Redirect.INHERIT)
+          redirectOutput(ProcessBuilder.Redirect.PIPE)
+        } else {
+          redirectErrorStream(true)
+          redirectOutput(ProcessBuilder.Redirect.PIPE)
+        }
+      }
+      .start()
+
+    if (inputStream != null) {
+      launch {
+        inputStream.use { input ->
+          process.outputStream.use { output ->
+            input.copyTo(output)
+          }
+        }
+      }
+    } else {
+      process.outputStream.close()
+    }
+
+    if (outputMode == ConsoleHandler.Companion.OutputMode.Hide) {
+      launch {
+        process.inputStream.copyTo(object : OutputStream() {
+          override fun write(b: Int) {
+          }
+
+          override fun write(b: ByteArray) {
+          }
+
+          override fun write(b: ByteArray, off: Int, len: Int) {
+          }
+        })
+      }
+    } else if (outputMode == ConsoleHandler.Companion.OutputMode.Return) {
+      process.errorStream.copyTo(System.err)
+      result = process.inputStream.bufferedReader().use {
+        it.readText()
+      }
+    }
+
+    process.waitFor(30, TimeUnit.SECONDS)
+  }
+
+  return result
+}
+
+@Suppress("BlockingMethodInNonBlockingContext")
+suspend fun execResult(vararg commandLine: String): Int {
+  return withContext(Dispatchers.IO) {
+    ProcessBuilder(*commandLine)
+      .redirectError(ProcessBuilder.Redirect.INHERIT)
+      .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+      .start()
+      .waitFor()
+  }
 }
