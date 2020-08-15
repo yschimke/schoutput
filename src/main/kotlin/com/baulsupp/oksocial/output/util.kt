@@ -1,24 +1,25 @@
 package com.baulsupp.oksocial.output
 
 import com.baulsupp.oksocial.output.process.exec
-import java.io.Console
-import java.io.IOException
-import java.util.Properties
-import javax.activation.MimeType
-import javax.activation.MimeTypeParseException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import okio.BufferedSource
 import okio.Sink
 import okio.sink
-import org.zeroturnaround.exec.stream.slf4j.Slf4jOutputStream
-import org.zeroturnaround.exec.stream.slf4j.Slf4jStream
+import org.zeroturnaround.exec.stream.LogOutputStream
+import java.io.Console
+import java.io.IOException
+import java.util.*
+import java.util.logging.Logger
+import javax.activation.MimeType
+import javax.activation.MimeTypeParseException
 
-fun BufferedSource.writeToSink(out: Sink) {
-  while (!this.exhausted()) {
-    out.write(this.buffer, this.buffer.size)
-    out.flush()
+suspend fun BufferedSource.writeToSink(out: Sink) {
+  withContext(Dispatchers.IO) {
+    while (!this@writeToSink.exhausted()) {
+      out.write(this@writeToSink.buffer, this@writeToSink.buffer.size)
+      out.flush()
+    }
   }
 }
 
@@ -26,27 +27,28 @@ val systemOut: Sink by lazy {
   System.out.sink()
 }
 
-val stdErrLogging: Slf4jOutputStream by lazy {
-  Slf4jStream.ofCaller()
-    .asInfo()!!
-}
-
 val isTerminal by lazy {
   System.console() != null
 }
 
+val stdErrLogging by lazy {
+  object : LogOutputStream() {
+    override fun processLine(line: String) {
+      Logger.getLogger("STDERR").fine(line)
+    }
+  }
+}
+
 suspend fun Console.readPasswordString(prompt: String): String {
-  return GlobalScope.async(Dispatchers.IO) {
+  return withContext(Dispatchers.IO) {
     String(readPassword(prompt))
   }
-    .await()
 }
 
 suspend fun Console.readString(prompt: String): String {
-  return GlobalScope.async(Dispatchers.IO) {
+  return withContext(Dispatchers.IO) {
     readLine(prompt)
   }
-    .await()
 }
 
 suspend fun isInstalled(command: String): Boolean = if (isOSX) {
