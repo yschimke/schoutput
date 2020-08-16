@@ -2,31 +2,23 @@ package com.baulsupp.oksocial.output
 
 import com.baulsupp.oksocial.output.iterm.ItermOutputHandler
 import com.baulsupp.oksocial.output.iterm.itermIsAvailable
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.cbor.CBORFactory
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import okio.Buffer
+import okio.BufferedSource
+import okio.sink
 import java.awt.Desktop
+import java.io.BufferedInputStream
+import java.io.File
 import java.net.URI
 import java.net.UnknownHostException
-import java.util.Arrays.asList
-import java.util.concurrent.TimeUnit
+import java.nio.charset.StandardCharsets
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.LineEvent
 import kotlin.coroutines.resume
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import okio.BufferedSource
-import okio.buffer
-import okio.sink
-import okio.source
-import java.io.*
 
 val jqInstalled by lazy {
   runBlocking {
@@ -56,62 +48,33 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
   }
 
   override suspend fun showOutput(response: R) {
-    var mimeType = responseExtractor.mimeType(response)
+    withContext(Dispatchers.IO) {
+      val mimeType = responseExtractor.mimeType(response)
+      val source = responseExtractor.source(response)
 
-    var source = responseExtractor.source(response)
-
-    if (mimeType != null) {
-      if (isCbor(mimeType)) {
-        source = convertCborToJson(source)
-        mimeType = "application/json"
+      if (mimeType != null) {
+        if (isMedia(mimeType)) {
+          openPreview(response)
+          return@withContext
+        } else if (isAudio(mimeType)) {
+          playAudio(response)
+          return@withContext
+        } else if (jqInstalled && isJson(mimeType)) {
+          prettyPrintJson(source)
+          return@withContext
+        }
       }
 
-      if (isMedia(mimeType)) {
-        openPreview(response)
-        return
-      } else if (isAudio(mimeType)) {
-        playAudio(response)
-        return
-      } else if (jqInstalled && isJson(mimeType)) {
-        prettyPrintJson(source)
-        return
-      }
+      source.writeToSink(systemOut)
+      println("")
     }
-
-    // TODO support a nice hex mode for binary files
-    source.writeToSink(systemOut)
-    println("")
-  }
-
-  private fun cborMapper(): ObjectMapper {
-    return ObjectMapper(CBORFactory()).registerModule(ParameterNamesModule())
-      .registerModule(Jdk8Module())
-      .registerModule(JavaTimeModule())
-  }
-
-  private fun jsonMapper(): ObjectMapper {
-    return ObjectMapper().registerModule(ParameterNamesModule())
-      .registerModule(Jdk8Module())
-      .registerModule(JavaTimeModule())
-  }
-
-  private fun convertCborToJson(source: BufferedSource): BufferedSource {
-    // TODO consider adding streaming
-
-    val cborMapper = cborMapper()
-
-    val map = cborMapper.readValue(source.inputStream(), object : TypeReference<Map<String, Any>>() {})
-
-    val om = jsonMapper()
-
-    val bytes = om.writeValueAsBytes(map)
-
-    return ByteArrayInputStream(bytes).source().buffer()
   }
 
   suspend fun prettyPrintJson(response: BufferedSource) {
     val command = if (isTerminal) arrayOf("jq", "-C", ".") else arrayOf("jq", ".")
-    exec(*command)
+    response.inputStream().use {
+      exec(*command, inputStream = it, outputMode = OutputMode.Inherit)
+    }
   }
 
   open suspend fun playAudio(response: R) {
@@ -133,30 +96,38 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
     }
   }
 
+  @Suppress("BlockingMethodInNonBlockingContext")
   open suspend fun openPreview(response: R) {
-    if (Desktop.isDesktopSupported()) {
-      val tempFile = writeToFile(response)
+    withContext(Dispatchers.IO) {
+      if (Desktop.isDesktopSupported()) {
+        val tempFile = writeToFile(response)
 
-      Desktop.getDesktop().open(tempFile)
-    } else {
-      System.err.println("Falling back to console output, use -r to avoid warning")
+        Desktop.getDesktop().open(tempFile)
+      } else {
+        System.err.println("Falling back to console output, use -r to avoid warning")
 
-      responseExtractor.source(response).writeToSink(systemOut)
-      println("")
+        responseExtractor.source(response).writeToSink(systemOut)
+        println("")
+      }
     }
   }
 
+  @Suppress("BlockingMethodInNonBlockingContext")
   suspend fun writeToFile(response: R): File {
-    val mimeType = responseExtractor.mimeType(response)
+    return withContext(Dispatchers.IO) {
+      val mimeType = responseExtractor.mimeType(response)
 
-    val tempFile = File.createTempFile("output", getExtension(mimeType))
+      val tempFile = File.createTempFile("output", getExtension(mimeType))
 
-    tempFile.sink().use { out ->
-      responseExtractor.source(response).writeToSink(out)
+      tempFile.sink().use { out ->
+        responseExtractor.source(response).writeToSink(out)
+      }
+
+      tempFile
     }
-    return tempFile
   }
 
+  @Suppress("BlockingMethodInNonBlockingContext")
   override suspend fun openLink(url: String) {
     if (Desktop.isDesktopSupported()) {
       Desktop.getDesktop().browse(URI.create(url))
