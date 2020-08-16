@@ -28,13 +28,13 @@ import okio.sink
 import okio.source
 import java.io.*
 
-open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<R>) : OutputHandler<R> {
-  val jqInstalled by lazy {
-    runBlocking {
-      isInstalled("jq")
-    }
+val jqInstalled by lazy {
+  runBlocking {
+    isInstalled("jq")
   }
+}
 
+open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<R>) : OutputHandler<R> {
   override suspend fun showError(message: String?, e: Throwable?) {
     if (logger.isLoggable(Level.FINE)) {
       logger.log(Level.WARNING, message, e)

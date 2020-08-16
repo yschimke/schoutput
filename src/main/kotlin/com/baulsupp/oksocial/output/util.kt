@@ -46,9 +46,9 @@ suspend fun Console.readString(prompt: String): String {
 }
 
 suspend fun isInstalled(command: String): Boolean = if (isOSX) {
-  execResult("command", "-v", command) == 0
+  execResult("command", "-v", command, outputMode = ConsoleHandler.Companion.OutputMode.Hide) == 0
 } else {
-  execResult("which", command) == 0
+  execResult("which", command, outputMode = ConsoleHandler.Companion.OutputMode.Hide) == 0
 }
 
 fun isMedia(mediaType: String): Boolean {
@@ -125,15 +125,19 @@ suspend fun exec(vararg commandLine: String, outputMode: ConsoleHandler.Companio
   withContext(Dispatchers.IO) {
     val process = ProcessBuilder(*commandLine)
       .apply {
-        if (outputMode == ConsoleHandler.Companion.OutputMode.Inherit) {
-          redirectError(ProcessBuilder.Redirect.INHERIT)
-          redirectOutput(ProcessBuilder.Redirect.INHERIT)
-        } else if (outputMode == ConsoleHandler.Companion.OutputMode.Return) {
-          redirectError(ProcessBuilder.Redirect.INHERIT)
-          redirectOutput(ProcessBuilder.Redirect.PIPE)
-        } else {
-          redirectErrorStream(true)
-          redirectOutput(ProcessBuilder.Redirect.PIPE)
+        when (outputMode) {
+            ConsoleHandler.Companion.OutputMode.Inherit -> {
+              redirectError(ProcessBuilder.Redirect.INHERIT)
+              redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            }
+            ConsoleHandler.Companion.OutputMode.Return -> {
+              redirectError(ProcessBuilder.Redirect.INHERIT)
+              redirectOutput(ProcessBuilder.Redirect.PIPE)
+            }
+            ConsoleHandler.Companion.OutputMode.Hide -> {
+              redirectErrorStream(true)
+              redirectOutput(ProcessBuilder.Redirect.PIPE)
+            }
         }
       }
       .start()
@@ -152,16 +156,7 @@ suspend fun exec(vararg commandLine: String, outputMode: ConsoleHandler.Companio
 
     if (outputMode == ConsoleHandler.Companion.OutputMode.Hide) {
       launch {
-        process.inputStream.copyTo(object : OutputStream() {
-          override fun write(b: Int) {
-          }
-
-          override fun write(b: ByteArray) {
-          }
-
-          override fun write(b: ByteArray, off: Int, len: Int) {
-          }
-        })
+        process.inputStream.copyTo(NullOutputStream)
       }
     } else if (outputMode == ConsoleHandler.Companion.OutputMode.Return) {
       process.errorStream.copyTo(System.err)
@@ -177,12 +172,44 @@ suspend fun exec(vararg commandLine: String, outputMode: ConsoleHandler.Companio
 }
 
 @Suppress("BlockingMethodInNonBlockingContext")
-suspend fun execResult(vararg commandLine: String): Int {
+suspend fun execResult(vararg commandLine: String, outputMode: ConsoleHandler.Companion.OutputMode = ConsoleHandler.Companion.OutputMode.Hide): Int {
   return withContext(Dispatchers.IO) {
-    ProcessBuilder(*commandLine)
-      .redirectError(ProcessBuilder.Redirect.INHERIT)
-      .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+    val process = ProcessBuilder(*commandLine)
+      .apply {
+        when (outputMode) {
+          ConsoleHandler.Companion.OutputMode.Inherit -> {
+            redirectError(ProcessBuilder.Redirect.INHERIT)
+            redirectOutput(ProcessBuilder.Redirect.INHERIT)
+          }
+          ConsoleHandler.Companion.OutputMode.Hide -> {
+            redirectErrorStream(true)
+            redirectOutput(ProcessBuilder.Redirect.PIPE)
+          }
+          ConsoleHandler.Companion.OutputMode.Return -> {
+            error("Unsupported Mode: $outputMode")
+          }
+        }
+      }
       .start()
+
+    if (outputMode == ConsoleHandler.Companion.OutputMode.Hide) {
+      launch {
+        process.inputStream.copyTo(NullOutputStream)
+      }
+    }
+
+    process
       .waitFor()
+  }
+}
+
+object NullOutputStream : OutputStream() {
+  override fun write(b: Int) {
+  }
+
+  override fun write(b: ByteArray) {
+  }
+
+  override fun write(b: ByteArray, off: Int, len: Int) {
   }
 }
