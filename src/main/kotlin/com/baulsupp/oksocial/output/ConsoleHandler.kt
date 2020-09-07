@@ -22,7 +22,7 @@ import kotlin.coroutines.resume
 
 val jqInstalled by lazy {
   runBlocking {
-    isInstalled("jq")
+    !isWindows && isInstalled("jq")
   }
 }
 

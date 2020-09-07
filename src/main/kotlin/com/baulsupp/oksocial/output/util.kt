@@ -47,9 +47,12 @@ suspend fun Console.readString(prompt: String): String {
 
 suspend fun isInstalled(command: String): Boolean = if (isOSX) {
   execResult("command", "-v", command, outputMode = ConsoleHandler.Companion.OutputMode.Hide) == 0
-} else {
+} else if (!isWindows) {
   execResult("which", command, outputMode = ConsoleHandler.Companion.OutputMode.Hide) == 0
+} else {
+  false
 }
+
 
 fun isMedia(mediaType: String): Boolean {
   return mediaType.startsWith("image/") || mediaType.endsWith("/pdf")
@@ -109,13 +112,15 @@ fun versionString(
 }
 
 val isOSX by lazy {
-  System.getProperty("os.name")
-    .contains("OS X")
+  System.getProperty("os.name").contains("OS X")
 }
 
 val isLinux by lazy {
-  System.getProperty("os.name")
-    .contains("Linux")
+  System.getProperty("os.name").contains("Linux")
+}
+
+val isWindows by lazy {
+  System.getProperty("os.name").contains("Windows")
 }
 
 @Suppress("BlockingMethodInNonBlockingContext")

@@ -1,8 +1,8 @@
 object Versions {
   val jackson = "2.10.3"
   val junit = "5.6.2"
-  val kotlin = "1.3.72"
-  val kotlinCoroutines = "1.3.8"
+  val kotlin = "1.4.0"
+  val kotlinCoroutines = "1.3.9"
 }
 
 object Deps {
@@ -22,9 +22,6 @@ object Deps {
   val kotlinStandardLibrary = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
   val kotlinTest = "org.jetbrains.kotlin:kotlin-test:${Versions.kotlin}"
   val kotlinTestJunit = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}"
-  val okio = "com.squareup.okio:okio:2.4.3"
-  val slf4jApi = "org.slf4j:slf4j-api:1.7.30"
-  val slf4jJdk14 = "org.slf4j:slf4j-jdk14:1.7.30"
+  val okio = "com.squareup.okio:okio:2.8.0"
   val svgSalamander = "com.kitfox.svg:svg-salamander:1.0"
-  val ztExec = "org.zeroturnaround:zt-exec:1.11"
 }
