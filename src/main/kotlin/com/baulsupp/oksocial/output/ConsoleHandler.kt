@@ -143,6 +143,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
       return when {
         itermIsAvailable() -> ItermOutputHandler(re)
         isOSX -> OsxOutputHandler(re)
+        isWindows -> WindowsOutputHandler(re)
         else -> ConsoleHandler(re)
       }
     }
