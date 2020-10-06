@@ -17,11 +17,9 @@ class WindowsOutputHandler<R>(responseExtractor: ResponseExtractor<R>): ConsoleH
 
   override suspend fun openPreview(response: R) {
     withContext(Dispatchers.IO) {
-      if (Desktop.isDesktopSupported()) {
-        val tempFile = writeToFile(response)
+      val tempFile = writeToFile(response)
 
-        execResult("powershell", "-c", tempFile.path)
-      }
+      execResult("powershell", "-c", tempFile.path)
     }
   }
 }
