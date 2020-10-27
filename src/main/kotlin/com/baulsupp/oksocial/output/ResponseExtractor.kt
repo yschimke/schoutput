@@ -1,11 +1,11 @@
 package com.baulsupp.oksocial.output
 
-import java.io.ByteArrayInputStream
-import java.io.File
-import java.nio.file.Files
 import okio.BufferedSource
 import okio.buffer
 import okio.source
+import java.io.ByteArrayInputStream
+import java.io.File
+import java.nio.file.Files
 
 object ToStringResponseExtractor : ResponseExtractor<Any> {
   override fun mimeType(response: Any): String = "text/plain"

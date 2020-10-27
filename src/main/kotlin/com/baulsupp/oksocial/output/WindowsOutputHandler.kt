@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.output
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okio.ByteString.Companion.toByteString
-import java.awt.Desktop
 import java.io.File
 
 class WindowsOutputHandler<R>(responseExtractor: ResponseExtractor<R>): ConsoleHandler<R>(responseExtractor) {

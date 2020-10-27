@@ -5,7 +5,6 @@ import com.baulsupp.oksocial.output.iterm.itermIsAvailable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import okio.Buffer
 import okio.BufferedSource
 import okio.sink
 import java.awt.Desktop
@@ -13,7 +12,6 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.net.URI
 import java.net.UnknownHostException
-import java.nio.charset.StandardCharsets
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.sound.sampled.AudioSystem
@@ -143,6 +141,7 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
       return when {
         itermIsAvailable() -> ItermOutputHandler(re)
         isOSX -> OsxOutputHandler(re)
+        isLinux -> LinuxOutputHandler(re)
         isWindows -> WindowsOutputHandler(re)
         else -> ConsoleHandler(re)
       }
