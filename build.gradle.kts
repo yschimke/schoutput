@@ -23,8 +23,8 @@ java {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.apiVersion = "1.3"
-    kotlinOptions.languageVersion = "1.3"
+    kotlinOptions.apiVersion = "1.4"
+    kotlinOptions.languageVersion = "1.4"
 }
 
 dependencies {
@@ -43,7 +43,7 @@ dependencies {
   implementation(Deps.okio)
   implementation(Deps.svgSalamander)
 
-  compileOnly("org.graalvm.nativeimage:svm:20.2.0") {
+  compileOnly("org.graalvm.nativeimage:svm:20.3.0") {
     // https://youtrack.jetbrains.com/issue/KT-29513
     exclude(group= "org.graalvm.nativeimage")
     exclude(group= "org.graalvm.truffle")
