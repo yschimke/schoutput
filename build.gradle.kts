@@ -43,14 +43,6 @@ dependencies {
   implementation(Deps.okio)
   implementation(Deps.svgSalamander)
 
-  compileOnly("org.graalvm.nativeimage:svm:20.3.0") {
-    // https://youtrack.jetbrains.com/issue/KT-29513
-    exclude(group= "org.graalvm.nativeimage")
-    exclude(group= "org.graalvm.truffle")
-//    exclude(group= "org.graalvm.sdk")
-    exclude(group= "org.graalvm.compiler")
-  }
-
   testImplementation(Deps.junitJupiterApi)
   testImplementation(Deps.kotlinTest)
   testImplementation(Deps.kotlinTestJunit)
