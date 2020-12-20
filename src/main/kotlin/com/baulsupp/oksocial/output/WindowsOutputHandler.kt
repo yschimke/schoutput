@@ -22,8 +22,3 @@ class WindowsOutputHandler<R>(responseExtractor: ResponseExtractor<R>): ConsoleH
     }
   }
 }
-
-suspend fun main() {
-  WindowsOutputHandler(SimpleResponseExtractor).openPreview(
-    SimpleResponse("image/png", source = File("src/test/resources/PNG_transparency_demonstration_1.png").readBytes().toByteString()))
-}
