@@ -1,7 +1,7 @@
 object Versions {
   val jackson = "2.12.0"
   val junit = "5.7.0"
-  val kotlin = "1.4.20"
+  val kotlin = "1.4.21"
   val kotlinCoroutines = "1.4.1"
 }
 
@@ -23,5 +23,5 @@ object Deps {
   val kotlinTest = "org.jetbrains.kotlin:kotlin-test:${Versions.kotlin}"
   val kotlinTestJunit = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}"
   val okio = "com.squareup.okio:okio:2.9.0"
-  val svgSalamander = "com.kitfox.svg:svg-salamander:1.0"
+  val svgSalamander = "com.formdev:svgSalamander:1.1.2.4"
 }
