@@ -25,6 +25,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.apiVersion = "1.4"
     kotlinOptions.languageVersion = "1.4"
+    kotlinOptions.freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
 }
 
 dependencies {
@@ -42,6 +43,7 @@ dependencies {
   implementation(Deps.kotlinStandardLibrary)
   implementation(Deps.okio)
   implementation(Deps.svgSalamander)
+  implementation(Deps.process)
 
   testImplementation(Deps.junitJupiterApi)
   testImplementation(Deps.kotlinTest)

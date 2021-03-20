@@ -24,4 +24,5 @@ object Deps {
   val kotlinTestJunit = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}"
   val okio = "com.squareup.okio:okio:2.9.0"
   val svgSalamander = "com.kitfox.svg:svg-salamander:1.0"
+  val process = "com.github.pgreze:kotlin-process:1.2"
 }
