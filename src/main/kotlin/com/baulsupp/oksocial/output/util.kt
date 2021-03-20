@@ -1,6 +1,10 @@
 package com.baulsupp.oksocial.output
 
+import com.github.pgreze.process.Redirect
+import com.github.pgreze.process.Redirect.SILENT
+import com.github.pgreze.process.process
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
@@ -44,14 +48,14 @@ suspend fun Console.readString(prompt: String): String {
   }
 }
 
-suspend fun isInstalled(command: String): Boolean = if (isOSX) {
-  execResult("command", "-v", command, outputMode = ConsoleHandler.Companion.OutputMode.Hide) == 0
+@OptIn(ExperimentalCoroutinesApi::class)
+suspend fun isInstalled(command: String): Boolean = if (com.baulsupp.oksocial.output.isOSX) {
+  process("command", "-v", command, stdout = SILENT, stderr = SILENT).resultCode == 0
 } else if (!isWindows) {
-  execResult("which", command, outputMode = ConsoleHandler.Companion.OutputMode.Hide) == 0
+  process("which", command, stdout = SILENT, stderr = SILENT).resultCode == 0
 } else {
   false
 }
-
 
 fun isMedia(mediaType: String): Boolean {
   return mediaType.startsWith("image/") || mediaType.endsWith("/pdf")
@@ -120,91 +124,6 @@ val isLinux by lazy {
 
 val isWindows by lazy {
   System.getProperty("os.name").contains("Windows")
-}
-
-@Suppress("BlockingMethodInNonBlockingContext")
-suspend fun exec(vararg commandLine: String, outputMode: ConsoleHandler.Companion.OutputMode = ConsoleHandler.Companion.OutputMode.Hide, inputStream: InputStream? = null): String? {
-  var result: String? = null
-
-  withContext(Dispatchers.IO) {
-    val process = ProcessBuilder(*commandLine)
-      .apply {
-        when (outputMode) {
-            ConsoleHandler.Companion.OutputMode.Inherit -> {
-              redirectError(ProcessBuilder.Redirect.INHERIT)
-              redirectOutput(ProcessBuilder.Redirect.INHERIT)
-            }
-            ConsoleHandler.Companion.OutputMode.Return -> {
-              redirectError(ProcessBuilder.Redirect.INHERIT)
-              redirectOutput(ProcessBuilder.Redirect.PIPE)
-            }
-            ConsoleHandler.Companion.OutputMode.Hide -> {
-              redirectErrorStream(true)
-              redirectOutput(ProcessBuilder.Redirect.PIPE)
-            }
-        }
-      }
-      .start()
-
-    if (inputStream != null) {
-      launch {
-        inputStream.use { input ->
-          process.outputStream.use { output ->
-            input.copyTo(output)
-          }
-        }
-      }
-    } else {
-      process.outputStream.close()
-    }
-
-    if (outputMode == ConsoleHandler.Companion.OutputMode.Hide) {
-      launch {
-        process.inputStream.copyTo(NullOutputStream)
-      }
-    } else if (outputMode == ConsoleHandler.Companion.OutputMode.Return) {
-      process.errorStream.copyTo(System.err)
-      result = process.inputStream.bufferedReader().use {
-        it.readText()
-      }
-    }
-
-    process.waitFor(30, TimeUnit.SECONDS)
-  }
-
-  return result
-}
-
-@Suppress("BlockingMethodInNonBlockingContext")
-suspend fun execResult(vararg commandLine: String, outputMode: ConsoleHandler.Companion.OutputMode = ConsoleHandler.Companion.OutputMode.Hide): Int {
-  return withContext(Dispatchers.IO) {
-    val process = ProcessBuilder(*commandLine)
-      .apply {
-        when (outputMode) {
-          ConsoleHandler.Companion.OutputMode.Inherit -> {
-            redirectError(ProcessBuilder.Redirect.INHERIT)
-            redirectOutput(ProcessBuilder.Redirect.INHERIT)
-          }
-          ConsoleHandler.Companion.OutputMode.Hide -> {
-            redirectErrorStream(true)
-            redirectOutput(ProcessBuilder.Redirect.PIPE)
-          }
-          ConsoleHandler.Companion.OutputMode.Return -> {
-            error("Unsupported Mode: $outputMode")
-          }
-        }
-      }
-      .start()
-
-    if (outputMode == ConsoleHandler.Companion.OutputMode.Hide) {
-      launch {
-        process.inputStream.copyTo(NullOutputStream)
-      }
-    }
-
-    process
-      .waitFor()
-  }
 }
 
 object NullOutputStream : OutputStream() {

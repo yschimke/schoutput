@@ -2,7 +2,12 @@ package com.baulsupp.oksocial.output
 
 import com.baulsupp.oksocial.output.iterm.ItermOutputHandler
 import com.baulsupp.oksocial.output.iterm.itermIsAvailable
+import com.github.pgreze.process.InputSource.Companion.fromInputStream
+import com.github.pgreze.process.Redirect
+import com.github.pgreze.process.Redirect.PRINT
+import com.github.pgreze.process.process
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
@@ -68,10 +73,14 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
     }
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   suspend fun prettyPrintJson(response: BufferedSource) {
     val command = if (isTerminal) arrayOf("jq", "-C", ".") else arrayOf("jq", ".")
     response.inputStream().use {
-      exec(*command, inputStream = it, outputMode = OutputMode.Inherit)
+      process(
+        *command,
+        stdin = fromInputStream(it)
+      )
     }
   }
 
@@ -148,7 +157,9 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
     }
 
     enum class OutputMode {
-      Hide, Inherit, Return
+      Hide,
+      Inherit,
+      Return
     }
 
     fun instance(): ConsoleHandler<Any> = instance(ToStringResponseExtractor)
