@@ -12,7 +12,6 @@ open class OsxOutputHandler<R>(responseExtractor: ResponseExtractor<R>) : Consol
 ) {
   @OptIn(ExperimentalCoroutinesApi::class)
   override suspend fun openPreview(response: R) {
-    println("a")
     responseExtractor.source(response).use {
       process(
         "open", "-f", "-a", "Preview",
@@ -21,7 +20,6 @@ open class OsxOutputHandler<R>(responseExtractor: ResponseExtractor<R>) : Consol
         stdout = Redirect.SILENT
       )
     }
-    println("b")
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
