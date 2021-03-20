@@ -1,10 +1,23 @@
-package com.baulsupp.oksocial.output
+package com.baulsupp.oksocial.output.handler
 
+import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.oksocial.output.getExtension
+import com.baulsupp.oksocial.output.isAudio
+import com.baulsupp.oksocial.output.isInstalled
+import com.baulsupp.oksocial.output.isJson
+import com.baulsupp.oksocial.output.isLinux
+import com.baulsupp.oksocial.output.isMedia
+import com.baulsupp.oksocial.output.isOSX
+import com.baulsupp.oksocial.output.isTerminal
+import com.baulsupp.oksocial.output.isWindows
 import com.baulsupp.oksocial.output.iterm.ItermOutputHandler
-import com.baulsupp.oksocial.output.iterm.itermIsAvailable
+import com.baulsupp.oksocial.output.iterm.ItermOutputHandler.Companion.itermIsAvailable
+import com.baulsupp.oksocial.output.responses.FileResponseExtractor
+import com.baulsupp.oksocial.output.responses.ResponseExtractor
+import com.baulsupp.oksocial.output.responses.ToStringResponseExtractor
+import com.baulsupp.oksocial.output.systemOut
+import com.baulsupp.oksocial.output.writeToSink
 import com.github.pgreze.process.InputSource.Companion.fromInputStream
-import com.github.pgreze.process.Redirect
-import com.github.pgreze.process.Redirect.PRINT
 import com.github.pgreze.process.process
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,12 +35,6 @@ import java.util.logging.Logger
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.LineEvent
 import kotlin.coroutines.resume
-
-val jqInstalled by lazy {
-  runBlocking {
-    !isWindows && isInstalled("jq")
-  }
-}
 
 open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<R>) : OutputHandler<R> {
   override suspend fun showError(message: String?, e: Throwable?) {
@@ -163,5 +170,17 @@ open class ConsoleHandler<R>(protected var responseExtractor: ResponseExtractor<
     }
 
     fun instance(): ConsoleHandler<Any> = instance(ToStringResponseExtractor)
+
+    @JvmStatic fun previewFile(file: File) {
+      runBlocking {
+        instance(FileResponseExtractor).openPreview(file)
+      }
+    }
+
+    val jqInstalled by lazy {
+      runBlocking {
+        !isWindows && isInstalled("jq")
+      }
+    }
   }
 }

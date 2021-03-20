@@ -1,5 +1,8 @@
-package com.baulsupp.oksocial.output
+package com.baulsupp.oksocial.output.handler
 
+import com.baulsupp.oksocial.output.responses.ResponseExtractor
+import com.baulsupp.oksocial.output.systemOut
+import com.baulsupp.oksocial.output.writeToSink
 import okio.Sink
 import okio.sink
 import java.io.File

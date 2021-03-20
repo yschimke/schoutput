@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.output
+package com.baulsupp.oksocial.output.handler
 
 /**
  * Interface for command line apps to output content.

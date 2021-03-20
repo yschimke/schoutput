@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.output
 
+import com.baulsupp.oksocial.output.handler.ConsoleHandler
+import com.baulsupp.oksocial.output.responses.ResponseExtractor
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory
 import java.io.ByteArrayInputStream
@@ -8,7 +10,7 @@ import kotlinx.coroutines.runBlocking
 import okio.BufferedSource
 import okio.buffer
 import okio.source
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class ConsoleHandlerTest {
   @Test

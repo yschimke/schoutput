@@ -1,6 +1,6 @@
-package com.baulsupp.oksocial.output
+package com.baulsupp.oksocial.output.handler
 
-import com.github.pgreze.process.Redirect
+import com.baulsupp.oksocial.output.responses.ResponseExtractor
 import com.github.pgreze.process.Redirect.SILENT
 import com.github.pgreze.process.process
 import kotlinx.coroutines.ExperimentalCoroutinesApi

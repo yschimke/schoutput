@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.output
+package com.baulsupp.oksocial.output.handler
 
 class TestOutputHandler<R> : OutputHandler<R> {
   val responses: MutableList<R> = mutableListOf()

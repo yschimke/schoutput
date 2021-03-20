@@ -1,21 +1,17 @@
 package com.baulsupp.oksocial.output
 
-import com.github.pgreze.process.Redirect
 import com.github.pgreze.process.Redirect.SILENT
 import com.github.pgreze.process.process
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
 import okio.Sink
 import okio.sink
 import java.io.Console
 import java.io.IOException
-import java.io.InputStream
 import java.io.OutputStream
 import java.util.Properties
-import java.util.concurrent.TimeUnit
 import javax.activation.MimeType
 import javax.activation.MimeTypeParseException
 

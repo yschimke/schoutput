@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.output.util
 
 import com.baulsupp.oksocial.output.isJson
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class MimeTypeUtilTest {
   @Test
