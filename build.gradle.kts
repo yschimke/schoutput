@@ -1,5 +1,6 @@
 plugins {
   kotlin("jvm") version Versions.kotlin
+  `java-library`
   `maven-publish`
   id("com.github.ben-manes.versions") version "0.39.0"
   id("net.nemerosa.versioning") version "2.15.0"
