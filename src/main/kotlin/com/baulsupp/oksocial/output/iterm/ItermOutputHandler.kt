@@ -1,25 +1,22 @@
 package com.baulsupp.oksocial.output.iterm
 
-import com.baulsupp.oksocial.output.formats.SvgHandler
 import com.baulsupp.oksocial.output.handler.OsxOutputHandler
 import com.baulsupp.oksocial.output.responses.ResponseExtractor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ItermOutputHandler<R>(responseExtractor: ResponseExtractor<R>) : OsxOutputHandler<R>(responseExtractor) {
   // https://www.iterm2.com/documentation-images.html
   override suspend fun openPreview(response: R) {
-    val source = responseExtractor.source(response).let {
-      if (responseExtractor.mimeType(response) == "image/svg+xml") {
-        SvgHandler.convertSvgToPng(it)
-      } else {
-        it
-      }
+    withContext(Dispatchers.IO) {
+      val source = responseExtractor.source(response)
+
+      val b64 = source.readByteString().base64()
+
+      print("${ESC}]1337;File=inline=1:")
+      print(b64)
+      print(BELL + "\n")
     }
-
-    val b64 = source.readByteString().base64()
-
-    print("${ESC}]1337;File=inline=1:")
-    print(b64)
-    print(BELL + "\n")
   }
 
   val ESC = 27.toChar()

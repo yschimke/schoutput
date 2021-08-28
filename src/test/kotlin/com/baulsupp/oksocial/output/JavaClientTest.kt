@@ -1,21 +1,20 @@
-package com.baulsupp.oksocial.output;
+package com.baulsupp.oksocial.output
 
-import com.baulsupp.oksocial.output.handler.ConsoleHandler;
-import java.io.File;
-import java.io.FileNotFoundException;
-import org.junit.jupiter.api.Test;
+import com.baulsupp.oksocial.output.handler.ConsoleHandler.Companion.previewFile
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import java.io.File
+import java.io.FileNotFoundException
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+class JavaClientTest {
+    @Test
+    fun testPreviewFileFail() {
+        Assertions.assertThrows(FileNotFoundException::class.java
+        ) { previewFile(File("sdfjkhfd.txt")) }
+    }
 
-public class JavaClientTest {
-  @Test
-  public void testPreviewFileFail() {
-    assertThrows(FileNotFoundException.class,
-      () -> ConsoleHandler.previewFile(new File("sdfjkhfd.txt")));
-  }
-
-  @Test
-  public void testPreviewFileWorks() {
-    ConsoleHandler.previewFile(new File("src/test/resources/PNG_transparency_demonstration_1.png"));
-  }
+    @Test
+    fun testPreviewFileWorks() {
+        previewFile(File("src/test/resources/PNG_transparency_demonstration_1.png"))
+    }
 }

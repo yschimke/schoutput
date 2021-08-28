@@ -1,16 +1,13 @@
 plugins {
   kotlin("jvm") version Versions.kotlin
   `maven-publish`
-  id("com.github.ben-manes.versions") version "0.28.0"
-  id("net.nemerosa.versioning") version "2.8.2"
+  id("com.github.ben-manes.versions") version "0.39.0"
+  id("net.nemerosa.versioning") version "2.15.0"
 }
 
 repositories {
-  jcenter()
   mavenCentral()
   maven(url = "https://jitpack.io")
-  maven(url = "https://repo.maven.apache.org/maven2")
-  maven(url = "https://dl.bintray.com/kotlin/kotlin-eap/")
 }
 
 group = "com.github.yschimke"
@@ -27,8 +24,8 @@ tasks.test {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.apiVersion = "1.4"
-    kotlinOptions.languageVersion = "1.4"
+    kotlinOptions.apiVersion = "1.5"
+    kotlinOptions.languageVersion = "1.5"
     kotlinOptions.freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
 }
 
@@ -36,39 +33,13 @@ dependencies {
   implementation(Deps.activation)
   implementation(Deps.byteunits)
   implementation(Deps.coroutinesCore)
-  implementation(Deps.jacksonCbor)
-  implementation(Deps.jacksonDatabind)
-  implementation(Deps.jacksonJdk8)
-  implementation(Deps.jacksonJsr310)
-  implementation(Deps.jacksonParams)
-  implementation(Deps.jacksonYaml)
-  implementation(Deps.jfreesvg)
   implementation(Deps.kotlinReflect)
   implementation(Deps.kotlinStandardLibrary)
   implementation(Deps.okio)
-  implementation(Deps.svgSalamander)
   implementation(Deps.process)
 
   testImplementation(Deps.junitJupiterApi)
   testImplementation(Deps.kotlinTest)
-  testImplementation(Deps.kotlinTestJunit)
 
-  testRuntime(Deps.junitJupiterEngine)
-}
-
-val sourcesJar by tasks.registering(Jar::class) {
-  classifier = "sources"
-  from(sourceSets.main.get().allSource)
-}
-
-publishing {
-  repositories {
-    maven(url = "build/repository")
-  }
-  publications {
-    register("mavenJava", MavenPublication::class) {
-      from(components["java"])
-      artifact(sourcesJar.get())
-    }
-  }
+  testRuntimeOnly(Deps.junitJupiterEngine)
 }
