@@ -15,5 +15,5 @@ object Deps {
   val kotlinStandardLibrary = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
   val kotlinTest = "org.jetbrains.kotlin:kotlin-test:${Versions.kotlin}"
   val okio = "com.squareup.okio:okio:${Versions.okio}"
-  val process = "com.github.pgreze:kotlin-process:1.2"
+  val process = "com.github.pgreze:kotlin-process:1.3.1"
 }
