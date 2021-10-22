@@ -7,6 +7,7 @@ import kotlinx.coroutines.withContext
 
 class ItermOutputHandler<R>(responseExtractor: ResponseExtractor<R>) : OsxOutputHandler<R>(responseExtractor) {
   // https://www.iterm2.com/documentation-images.html
+  @Suppress("BlockingMethodInNonBlockingContext")
   override suspend fun openPreview(response: R) {
     withContext(Dispatchers.IO) {
       val source = responseExtractor.source(response)

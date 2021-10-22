@@ -17,7 +17,7 @@ open class LinuxOutputHandler<R>(responseExtractor: ResponseExtractor<R>) : Cons
     process("xdg-open", "-f", "-a", "/Applications/Preview.app")
   }
 
-  @OptIn(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class, kotlinx.coroutines.DelicateCoroutinesApi::class)
   override suspend fun openLink(url: String) {
     GlobalScope.launch {
       process(

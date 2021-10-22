@@ -1,5 +1,5 @@
 plugins {
-  kotlin("jvm") version Versions.kotlin
+  kotlin("jvm") version libs.versions.kotlin
   `java-library`
   `maven-publish`
   id("com.github.ben-manes.versions") version "0.39.0"
@@ -15,34 +15,41 @@ group = "com.github.yschimke"
 version = versioning.info.display
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_1_8
-  targetCompatibility = JavaVersion.VERSION_1_8
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(17))
+  }
 }
 
 tasks.test {
   useJUnitPlatform()
 }
 
+kotlin {
+  jvmToolchain {
+    (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of("17"))
+  }
+}
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+//    kotlinOptions.jvmTarget = "17"
     kotlinOptions.apiVersion = "1.5"
     kotlinOptions.languageVersion = "1.5"
     kotlinOptions.freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
 }
 
 dependencies {
-  implementation(Deps.activation)
-  implementation(Deps.byteunits)
-  implementation(Deps.coroutinesCore)
-  implementation(Deps.kotlinReflect)
-  implementation(Deps.kotlinStandardLibrary)
-  implementation(Deps.okio)
-  implementation(Deps.process)
+  implementation(libs.activation)
+  implementation(libs.byteunits)
+  implementation(libs.coroutines.core)
+  implementation(libs.kotlin.reflect)
+  implementation(libs.kotlin.stdlibJdk8)
+  implementation(libs.okio)
+  implementation(libs.process)
 
-  testImplementation(Deps.junitJupiterApi)
-  testImplementation(Deps.kotlinTest)
+  testImplementation(libs.junitJupiterApi)
+  testImplementation(libs.kotlinTest)
 
-  testRuntimeOnly(Deps.junitJupiterEngine)
+  testRuntimeOnly(libs.junitJupiterEngine)
 }
 
 val sourcesJar by tasks.registering(Jar::class) {
