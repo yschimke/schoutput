@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.output.responses
+package com.baulsupp.schoutput.responses
 
 import okio.BufferedSource
 import okio.FileSystem
@@ -6,7 +6,7 @@ import okio.Path
 import okio.buffer
 
 class PathResponseExtractor(private val fileSystem: FileSystem) :
-  ResponseExtractor<Path> {
+    ResponseExtractor<Path> {
   override fun mimeType(response: Path): String? {
     return mimeType(response)
   }

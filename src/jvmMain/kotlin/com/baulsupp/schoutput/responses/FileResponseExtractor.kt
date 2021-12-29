@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.output.responses
+package com.baulsupp.schoutput.responses
 
 import okio.FileSystem
 

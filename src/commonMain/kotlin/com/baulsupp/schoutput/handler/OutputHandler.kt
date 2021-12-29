@@ -1,6 +1,6 @@
-package com.baulsupp.oksocial.output.handler
+package com.baulsupp.schoutput.handler
 
-import com.baulsupp.oksocial.output.errPrintln
+import com.baulsupp.schoutput.errPrintln
 
 /**
  * Interface for command line apps to output content.

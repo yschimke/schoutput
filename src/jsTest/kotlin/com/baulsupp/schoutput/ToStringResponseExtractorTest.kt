@@ -1,6 +1,6 @@
-package com.baulsupp.oksocial.output.responses
+package com.baulsupp.schoutput
 
-import com.baulsupp.oksocial.output.responses.ToStringResponseExtractor
+import com.baulsupp.schoutput.responses.ToStringResponseExtractor
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import okio.BufferedSource

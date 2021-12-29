@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.output
+package com.baulsupp.schoutput
 
 import okio.Path
 import java.nio.file.Files

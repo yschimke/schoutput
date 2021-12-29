@@ -1,3 +1,3 @@
-rootProject.name = "oksocial-output"
+rootProject.name = "schoutput"
 enableFeaturePreview("VERSION_CATALOGS")
 
