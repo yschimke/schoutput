@@ -1,68 +1,102 @@
 plugins {
-  kotlin("jvm") version libs.versions.kotlin
-  `java-library`
-  `maven-publish`
-  id("com.github.ben-manes.versions") version "0.39.0"
+  kotlin("multiplatform") version "1.6.10"
+  id("maven-publish")
   id("net.nemerosa.versioning") version "2.15.0"
-}
-
-repositories {
-  mavenCentral()
-  maven(url = "https://jitpack.io")
 }
 
 group = "com.github.yschimke"
 version = versioning.info.display
 
-java {
-  toolchain {
-    languageVersion.set(JavaLanguageVersion.of(17))
-  }
-}
-
-tasks.test {
-  useJUnitPlatform()
+repositories {
+  mavenCentral()
 }
 
 kotlin {
-  jvmToolchain {
-    (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of("17"))
+  jvm {
+    compilations.all {
+      kotlinOptions.jvmTarget = "1.8"
+    }
+    withJava()
+    testRuns["test"].executionTask.configure {
+      useJUnitPlatform()
+    }
+  }
+  js {
+    compilations.all {
+      kotlinOptions {
+        moduleKind = "umd"
+        sourceMap = true
+        metaInfo = true
+      }
+    }
+    nodejs {
+      testTask {
+        useMocha {
+          timeout = "30s"
+        }
+      }
+    }
+    browser {
+    }
+  }
+  val hostOs = System.getProperty("os.name")
+  val isMingwX64 = hostOs.startsWith("Windows")
+
+  sourceSets {
+    val commonMain by getting {
+      dependencies {
+        api("com.squareup.okio:okio:3.0.0")
+      }
+    }
+    val commonTest by getting {
+      dependencies {
+        implementation(kotlin("test"))
+        implementation("com.squareup.okio:okio:3.0.0")
+      }
+    }
+    val jvmMain by getting {
+    }
+    val jvmTest by getting {
+      dependencies {
+        implementation(kotlin("test"))
+        implementation("com.squareup.okio:okio:3.0.0")
+      }
+    }
+    val nonJvmMain by creating {
+      dependencies {
+        dependsOn(commonMain)
+      }
+    }
+    val nonJvmTest by creating {
+      dependencies {
+        dependsOn(commonTest)
+      }
+    }
+    val jsMain by getting {
+      dependsOn(nonJvmMain)
+      dependencies {
+      }
+    }
+    val jsTest by getting {
+      dependencies {
+        dependsOn(nonJvmTest)
+        implementation(kotlin("test"))
+      }
+    }
   }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-//    kotlinOptions.jvmTarget = "17"
-    kotlinOptions.apiVersion = "1.5"
-    kotlinOptions.languageVersion = "1.5"
-    kotlinOptions.freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
-}
-
-dependencies {
-  implementation(libs.activation)
-  implementation(libs.byteunits)
-  implementation(libs.coroutines.core)
-  implementation(libs.kotlin.reflect)
-  implementation(libs.kotlin.stdlibJdk8)
-  implementation(libs.okio)
-  implementation(libs.process)
-
-  testImplementation(libs.junitJupiterApi)
-  testImplementation(libs.kotlinTest)
-
-  testRuntimeOnly(libs.junitJupiterEngine)
-}
-
-val sourcesJar by tasks.registering(Jar::class) {
-  archiveClassifier.set("sources")
-  from(sourceSets.main.get().allSource)
-}
-
-afterEvaluate {
-  publishing {
-    publications {
-      register("mavenJava", MavenPublication::class) {
-        from(components["java"])
-        artifact(sourcesJar.get())
+publishing {
+  publications {
+    withType<MavenPublication> {
+//      artifact(javadocJar)
+      tasks.withType<AbstractPublishToMaven>()
+        .matching { it.publication == this }
+        .configureEach { enabled = true }
+    }
+    repositories {
+      maven {
+        url = uri("file:build/repo")
       }
     }
   }
