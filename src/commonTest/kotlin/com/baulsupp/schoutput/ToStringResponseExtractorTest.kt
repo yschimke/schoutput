@@ -1,9 +1,9 @@
 package com.baulsupp.schoutput
 
 import com.baulsupp.schoutput.responses.ToStringResponseExtractor
+import okio.BufferedSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import okio.BufferedSource
 
 class ToStringResponseExtractorTest {
     val extractor = ToStringResponseExtractor

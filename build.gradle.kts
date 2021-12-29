@@ -46,18 +46,28 @@ kotlin {
     val commonMain by getting {
       dependencies {
         api("com.squareup.okio:okio:3.0.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
       }
     }
     val commonTest by getting {
       dependencies {
+        dependsOn(commonMain)
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
         implementation(kotlin("test"))
         implementation("com.squareup.okio:okio:3.0.0")
       }
     }
     val jvmMain by getting {
+      dependencies {
+        implementation(libs.process)
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+        implementation(libs.activation)
+      }
     }
     val jvmTest by getting {
       dependencies {
+        dependsOn(jvmMain)
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
         implementation(kotlin("test"))
         implementation("com.squareup.okio:okio:3.0.0")
       }
@@ -65,10 +75,14 @@ kotlin {
     val nonJvmMain by creating {
       dependencies {
         dependsOn(commonMain)
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
       }
     }
     val nonJvmTest by creating {
       dependencies {
+        dependsOn(nonJvmMain)
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+        implementation(kotlin("test"))
         dependsOn(commonTest)
       }
     }
