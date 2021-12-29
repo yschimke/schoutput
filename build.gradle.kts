@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.github.yschimke"
-version = versioning.info.display
+version = versioning.info.effectiveVersion()
 
 repositories {
   mavenCentral()
@@ -99,5 +99,51 @@ publishing {
         url = uri("file:build/repo")
       }
     }
+  }
+}
+
+fun Project.booleanProperty(name: String) = this.findProperty(name).toString().toBoolean()
+
+fun Project.booleanEnv(name: String) = (System.getenv(name) as String?).toString().toBoolean()
+
+task("tagRelease") {
+  doLast {
+    val tagName = versioning.info.nextVersion() ?: throw IllegalStateException("unable to compute tag name")
+    exec {
+      commandLine("git", "tag", tagName)
+    }
+    exec {
+      commandLine("git", "push", "origin", "refs/tags/$tagName")
+    }
+  }
+}
+
+fun net.nemerosa.versioning.VersionInfo.nextVersion() = when {
+  this.tag == null && this.branch == "main" -> {
+    val matchResult = "(\\d+)\\.(\\d+)\\.(\\d+)".toRegex().matchEntire(this.lastTag ?: "")
+    if (matchResult != null) {
+      val (_, major, minor) = matchResult.groupValues
+      "v$major.${minor.toInt() + 1}"
+    } else {
+      null
+    }
+  }
+  else -> {
+    null
+  }
+}
+
+fun net.nemerosa.versioning.VersionInfo.effectiveVersion() = when {
+  this.tag == null && this.branch == "main" -> {
+    val matchResult = "(\\d+)\\.(\\d+)\\.(\\d+)".toRegex().matchEntire(this.lastTag ?: "")
+    if (matchResult != null) {
+      val (_, major, minor) = matchResult.groupValues
+      "$major.${minor.toInt() + 1}.0-SNAPSHOT"
+    } else {
+      "0.0.1-SNAPSHOT"
+    }
+  }
+  else -> {
+    this.display
   }
 }
