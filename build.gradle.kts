@@ -1,7 +1,7 @@
 plugins {
-  kotlin("multiplatform") version "1.6.10"
+  kotlin("multiplatform") version "1.8.21"
   id("maven-publish")
-  id("net.nemerosa.versioning") version "2.15.0"
+  id("net.nemerosa.versioning") version "3.0.0"
 }
 
 group = "com.github.yschimke"
@@ -14,14 +14,14 @@ repositories {
 kotlin {
   jvm {
     compilations.all {
-      kotlinOptions.jvmTarget = "1.8"
+      kotlinOptions.jvmTarget = "17"
     }
-    withJava()
+//    withJava()
     testRuns["test"].executionTask.configure {
       useJUnitPlatform()
     }
   }
-  js {
+  js(IR) {
     compilations.all {
       kotlinOptions {
         moduleKind = "umd"
@@ -45,43 +45,43 @@ kotlin {
   sourceSets {
     val commonMain by getting {
       dependencies {
-        api("com.squareup.okio:okio:3.0.0")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+        api("com.squareup.okio:okio:3.3.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
       }
     }
     val commonTest by getting {
       dependencies {
         dependsOn(commonMain)
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
         implementation(kotlin("test"))
-        implementation("com.squareup.okio:okio:3.0.0")
+        implementation("com.squareup.okio:okio:3.3.0")
       }
     }
     val jvmMain by getting {
       dependencies {
         implementation(libs.process)
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
         implementation(libs.activation)
       }
     }
     val jvmTest by getting {
       dependencies {
         dependsOn(jvmMain)
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
         implementation(kotlin("test"))
-        implementation("com.squareup.okio:okio:3.0.0")
+        implementation("com.squareup.okio:okio:3.3.0")
       }
     }
     val nonJvmMain by creating {
       dependencies {
         dependsOn(commonMain)
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
       }
     }
     val nonJvmTest by creating {
       dependencies {
         dependsOn(nonJvmMain)
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
         implementation(kotlin("test"))
         dependsOn(commonTest)
       }
