@@ -2,8 +2,9 @@ package com.baulsupp.schoutput
 
 import com.github.pgreze.process.Redirect.SILENT
 import com.github.pgreze.process.process
+import jakarta.activation.MimeType
+import jakarta.activation.MimeTypeParseException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
@@ -13,8 +14,6 @@ import java.io.Console
 import java.io.IOException
 import java.io.OutputStream
 import java.util.Properties
-import javax.activation.MimeType
-import javax.activation.MimeTypeParseException
 
 suspend fun BufferedSource.writeToSink(out: Sink) {
   withContext(Dispatchers.IO) {
@@ -45,7 +44,6 @@ suspend fun Console.readString(prompt: String): String {
   }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 suspend fun isInstalled(command: String): Boolean = if (isOSX) {
   process("command", "-v", command, stdout = SILENT, stderr = SILENT).resultCode == 0
 } else if (!isWindows) {

@@ -16,7 +16,7 @@ kotlin {
     compilations.all {
       kotlinOptions.jvmTarget = "17"
     }
-//    withJava()
+    withJava()
     testRuns["test"].executionTask.configure {
       useJUnitPlatform()
     }
@@ -46,7 +46,7 @@ kotlin {
     val commonMain by getting {
       dependencies {
         api("com.squareup.okio:okio:3.3.0")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
       }
     }
     val commonTest by getting {
@@ -59,9 +59,10 @@ kotlin {
     }
     val jvmMain by getting {
       dependencies {
-        implementation(libs.process)
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
-        implementation(libs.activation)
+        api(libs.process)
+        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+        api("com.squareup.okio:okio:3.3.0")
+        api(libs.activation)
       }
     }
     val jvmTest by getting {
